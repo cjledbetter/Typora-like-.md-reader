@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c3437"/>
+      <stop offset="100%" stop-color="#1b1e20"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4facfe"/>
+      <stop offset="100%" stop-color="#00f2fe"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded Rect -->
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="url(#bgGrad)" stroke="#3e474b" stroke-width="2"/>
+  
+  <!-- Stylized Typora/Markdown 'M' -->
+  <path d="M 32 44 L 46 44 L 64 68 L 82 44 L 96 44 L 96 84 L 84 84 L 84 62 L 69 82 L 59 82 L 44 62 L 44 84 L 32 84 Z" fill="#ffffff" fill-opacity="0.95"/>
+
+  <!-- Subtle accent dot or pen line -->
+  <rect x="32" y="90" width="64" height="4" rx="2" fill="url(#accentGrad)"/>
+</svg>

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Typora Reader
+GenericName=Markdown Reader
+Comment=Minimalist distraction-free Markdown reader inspired by Typora
+Exec=bash -c 'SCRIPT_DIR="$(dirname "$(realpath "%k")")"; python3 "$SCRIPT_DIR/typora-reader.py" "%f"'
+Icon=text-markdown
+Terminal=false
+Categories=Office;WordProcessor;Utility;TextEditor;Viewer;
+MimeType=text/markdown;text/x-markdown;text/plain;
+Keywords=markdown;typora;reader;viewer;notes;
+StartupNotify=true
+StartupWMClass=typora-reader

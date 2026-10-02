@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="github" data-width="normal">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typora Reader</title>
+  
+  <!-- Highlight.js Theme -->
+  <link id="hljs-style" rel="stylesheet" href="assets/highlight-github.min.css">
+  
+  <!-- KaTeX CSS -->
+  <link rel="stylesheet" href="assets/katex.min.css">
+
+  <style>
+    /* ==========================================================================
+       TYPORA CORE THEMES & CSS VARIABLES
+       ========================================================================== */
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      --font-serif: "Georgia", "Cambria", "Times New Roman", "Songti SC", serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      --transition-speed: 0.2s;
+      --sidebar-width: 280px;
+    }
+
+    /* GitHub Theme (Default) */
+    html[data-theme="github"] {
+      --bg-color: #ffffff;
+      --text-color: #24292e;
+      --text-muted: #586069;
+      --border-color: #eaecef;
+      --border-light: #e1e4e8;
+      --code-bg: #f6f8fa;
+      --code-border: #e1e4e8;
+      --inline-code-bg: rgba(27, 31, 35, 0.05);
+      --inline-code-color: #24292e;
+      --blockquote-border: #dfe2e5;
+      --blockquote-color: #6a737d;
+      --table-border: #dfe2e5;
+      --table-alt-bg: #f8f9fa;
+      --table-header-bg: #f6f8fa;
+      --link-color: #0366d6;
+      --link-hover: #024ea4;
+      --sidebar-bg: #f6f8fa;
+      --sidebar-border: #e1e4e8;
+      --sidebar-hover: #ebf0f4;
+      --sidebar-active: #0366d6;
+      --sidebar-active-bg: #e1e4e8;
+      --header-bg: rgba(255, 255, 255, 0.92);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+      --kbd-bg: #fafbfc;
+      --kbd-border: #d1d5da;
+      --mark-bg: #fff5b1;
+      --font-main: var(--font-sans);
+    }
+
+    /* Night Theme (Typora Dark) */
+    html[data-theme="night"] {
+      --bg-color: #202428;
+      --text-color: #c8ccd1;
+      --text-muted: #8b949e;
+      --border-color: #353b45;
+      --border-light: #2c313a;
+      --code-bg: #181a1f;
+      --code-border: #282c34;
+      --inline-code-bg: rgba(255, 255, 255, 0.09);
+      --inline-code-color: #e06c75;
+      --blockquote-border: #4b5263;
+      --blockquote-color: #7f848e;
+      --table-border: #353b45;
+      --table-alt-bg: #23272d;
+      --table-header-bg: #1c2024;
+      --link-color: #61afef;
+      --link-hover: #80c2f7;
+      --sidebar-bg: #1a1c20;
+      --sidebar-border: #2c313a;
+      --sidebar-hover: #26292e;
+      --sidebar-active: #61afef;
+      --sidebar-active-bg: #282c34;
+      --header-bg: rgba(32, 36, 40, 0.92);
+      --shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      --kbd-bg: #282c34;
+      --kbd-border: #444b58;
+      --mark-bg: #634d00;
+      --font-main: var(--font-sans);
+    }
+
+    /* Newsprint Theme (Typora Literary Warm) */
+    html[data-theme="newsprint"] {
+      --bg-color: #f4f0ea;
+      --text-color: #2c2925;
+      --text-muted: #6e675f;
+      --border-color: #ded5c6;
+      --border-light: #e4dcce;
+      --code-bg: #ece5da;
+      --code-border: #dcd2c3;
+      --inline-code-bg: #e6dfd4;
+      --inline-code-color: #8c2419;
+      --blockquote-border: #b3a493;
+      --blockquote-color: #5c554e;
+      --table-border: #d4cabb;
+      --table-alt-bg: #ede6dc;
+      --table-header-bg: #e6dfd3;
+      --link-color: #9c271d;
+      --link-hover: #bd3125;
+      --sidebar-bg: #ece6dc;
+      --sidebar-border: #ded5c6;
+      --sidebar-hover: #e0d8cc;
+      --sidebar-active: #9c271d;
+      --sidebar-active-bg: #ded5c6;
+      --header-bg: rgba(244, 240, 234, 0.92);
+      --shadow: 0 4px 12px rgba(80, 60, 40, 0.08);
+      --kbd-bg: #f9f7f4;
+      --kbd-border: #c8bead;
+      --mark-bg: #fce7aa;
+      --font-main: var(--font-serif);
+    }
+
+    /* Gothic / GitHub Dark */
+    html[data-theme="gothic"] {
+      --bg-color: #0d1117;
+      --text-color: #c9d1d9;
+      --text-muted: #8b949e;
+      --border-color: #30363d;
+      --border-light: #21262d;
+      --code-bg: #161b22;
+      --code-border: #30363d;
+      --inline-code-bg: rgba(110, 118, 129, 0.4);
+      --inline-code-color: #f0f6fc;
+      --blockquote-border: #3b434b;
+      --blockquote-color: #8b949e;
+      --table-border: #30363d;
+      --table-alt-bg: #12161c;
+      --table-header-bg: #161b22;
+      --link-color: #58a6ff;
+      --link-hover: #79b8ff;
+      --sidebar-bg: #090d13;
+      --sidebar-border: #21262d;
+      --sidebar-hover: #161b22;
+      --sidebar-active: #58a6ff;
+      --sidebar-active-bg: #21262d;
+      --header-bg: rgba(13, 17, 23, 0.92);
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      --kbd-bg: #161b22;
+      --kbd-border: #30363d;
+      --mark-bg: #4f3b00;
+      --font-main: var(--font-sans);
+    }
+
+    /* ==========================================================================
+       GLOBAL LAYOUT
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-main);
+      font-size: 16px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+      overflow-x: hidden;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       TOP NAVIGATION BAR
+       ========================================================================== */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+      user-select: none;
+      transition: transform 0.25s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-left, .nav-right, .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      font-family: var(--font-sans);
+      font-weight: 500;
+    }
+
+    .nav-btn:hover {
+      background: var(--sidebar-hover);
+      color: var(--text-color);
+      border-color: var(--border-light);
+    }
+
+    .nav-btn.active {
+      background: var(--sidebar-active-bg);
+      color: var(--sidebar-active);
+      border-color: var(--border-color);
+    }
+
+    .doc-title-badge {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-color);
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--sidebar-hover);
+      border: 1px solid var(--border-light);
+    }
+
+    .theme-select, .width-select {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.15s ease;
+    }
+
+    .theme-select:hover, .width-select:hover {
+      color: var(--text-color);
+      border-color: var(--text-muted);
+    }
+
+    .theme-select option, .width-select option {
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* ==========================================================================
+       SIDEBAR (OUTLINE / TOC)
+       ========================================================================== */
+    #sidebar {
+      position: fixed;
+      top: 48px;
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      z-index: 90;
+      transform: translateX(-100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    #sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      padding: 12px 16px 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-search {
+      width: 100%;
+      background: var(--bg-color);
+      border: 1px solid var(--border-light);
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 12px;
+      color: var(--text-color);
+      outline: none;
+      font-family: var(--font-sans);
+    }
+    .sidebar-search:focus {
+      border-color: var(--sidebar-active);
+    }
+
+    .outline-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      list-style: none;
+    }
+
+    .outline-item {
+      padding: 5px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      text-decoration: none;
+      transition: all 0.1s ease;
+      border-left: 2px solid transparent;
+      line-height: 1.4;
+    }
+
+    .outline-item:hover {
+      background: var(--sidebar-hover);
+      color: var(--text-color);
+    }
+
+    .outline-item.active {
+      color: var(--sidebar-active);
+      font-weight: 600;
+      border-left-color: var(--sidebar-active);
+      background: var(--sidebar-active-bg);
+    }
+
+    .outline-h1 { padding-left: 16px; font-weight: 600; }
+    .outline-h2 { padding-left: 28px; }
+    .outline-h3 { padding-left: 40px; font-size: 12px; }
+    .outline-h4 { padding-left: 52px; font-size: 12px; opacity: 0.85; }
+    .outline-h5, .outline-h6 { padding-left: 64px; font-size: 11px; opacity: 0.75; }
+
+    .sidebar-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border-light);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT CONTAINER
+       ========================================================================== */
+    #main-container {
+      flex: 1;
+      margin-top: 48px;
+      display: flex;
+      justify-content: center;
+      transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+      min-height: calc(100vh - 48px);
+    }
+
+    body.sidebar-expanded #main-container {
+      margin-left: var(--sidebar-width);
+    }
+
+    #content-wrapper {
+      width: 100%;
+      padding: 48px 32px 120px;
+      transition: max-width 0.2s ease;
+    }
+
+    /* Reading Widths */
+    html[data-width="narrow"] #content-wrapper { max-width: 680px; }
+    html[data-width="normal"] #content-wrapper { max-width: 860px; }
+    html[data-width="wide"] #content-wrapper   { max-width: 1120px; }
+    html[data-width="full"] #content-wrapper   { max-width: 100%; padding-left: 48px; padding-right: 48px; }
+
+    /* ==========================================================================
+       TYPORA MARKDOWN TYPOGRAPHY
+       ========================================================================== */
+    .typora-content {
+      word-wrap: break-word;
+    }
+
+    /* Headings */
+    .typora-content h1,
+    .typora-content h2,
+    .typora-content h3,
+    .typora-content h4,
+    .typora-content h5,
+    .typora-content h6 {
+      margin-top: 1.5em;
+      margin-bottom: 0.6em;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--text-color);
+      scroll-margin-top: 64px;
+    }
+
+    .typora-content h1 {
+      font-size: 2.2em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid var(--border-color);
+      margin-top: 0.5em;
+    }
+
+    .typora-content h2 {
+      font-size: 1.65em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .typora-content h3 { font-size: 1.35em; }
+    .typora-content h4 { font-size: 1.15em; }
+    .typora-content h5 { font-size: 1em; }
+    .typora-content h6 { font-size: 0.88em; color: var(--text-muted); }
+
+    /* Paragraphs and Lists */
+    .typora-content p {
+      margin-bottom: 1em;
+    }
+
+    .typora-content ul,
+    .typora-content ol {
+      margin-bottom: 1em;
+      padding-left: 2em;
+    }
+
+    .typora-content li {
+      margin: 0.3em 0;
+    }
+
+    .typora-content li > p {
+      margin-bottom: 0.4em;
+    }
+
+    /* Checkboxes */
+    .typora-content input[type="checkbox"] {
+      margin-right: 6px;
+      vertical-align: middle;
+      cursor: pointer;
+      accent-color: var(--sidebar-active);
+    }
+
+    /* Links */
+    .typora-content a {
+      color: var(--link-color);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .typora-content a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+
+    /* Blockquotes */
+    .typora-content blockquote {
+      margin: 1em 0;
+      padding: 0.5em 1em;
+      color: var(--blockquote-color);
+      border-left: 4px solid var(--blockquote-border);
+      background: var(--code-bg);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .typora-content blockquote > :first-child { margin-top: 0; }
+    .typora-content blockquote > :last-child { margin-bottom: 0; }
+
+    /* Horizontal Rules */
+    .typora-content hr {
+      height: 2px;
+      padding: 0;
+      margin: 2em 0;
+      background-color: var(--border-color);
+      border: 0;
+    }
+
+    /* Inline Code */
+    .typora-content code:not(pre code) {
+      padding: 0.2em 0.4em;
+      margin: 0 0.15em;
+      font-size: 88%;
+      background-color: var(--inline-code-bg);
+      color: var(--inline-code-color);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+    }
+
+    /* Code Blocks */
+    .code-block-wrapper {
+      position: relative;
+      margin: 1.2em 0;
+      border-radius: 6px;
+      border: 1px solid var(--code-border);
+      background-color: var(--code-bg);
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 12px;
+      background: rgba(0, 0, 0, 0.03);
+      border-bottom: 1px solid var(--code-border);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+      font-family: var(--font-sans);
+    }
+
+    .copy-btn:hover {
+      background: var(--bg-color);
+      color: var(--text-color);
+      border-color: var(--border-light);
+    }
+
+    .typora-content pre {
+      margin: 0;
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-size: 13.5px;
+      line-height: 1.5;
+      font-family: var(--font-mono);
+      background: transparent;
+    }
+
+    .typora-content pre code {
+      background: transparent !important;
+      padding: 0 !important;
+      font-family: inherit;
+    }
+
+    /* Tables */
+    .typora-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1.2em 0;
+      overflow-x: auto;
+      display: block;
+    }
+
+    .typora-content th,
+    .typora-content td {
+      padding: 8px 14px;
+      border: 1px solid var(--table-border);
+    }
+
+    .typora-content th {
+      font-weight: 600;
+      background-color: var(--table-header-bg);
+    }
+
+    .typora-content tr:nth-child(2n) {
+      background-color: var(--table-alt-bg);
+    }
+
+    /* Images */
+    .typora-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin: 0.8em 0;
+      display: block;
+      box-shadow: var(--shadow);
+    }
+
+    /* Keyboard Keys `<kbd>` */
+    .typora-content kbd {
+      display: inline-block;
+      padding: 2px 5px;
+      font-size: 11px;
+      line-height: 10px;
+      color: var(--text-color);
+      vertical-align: middle;
+      background-color: var(--kbd-bg);
+      border: 1px solid var(--kbd-border);
+      border-bottom-color: var(--kbd-border);
+      border-radius: 4px;
+      box-shadow: inset 0 -1px 0 var(--kbd-border);
+      font-family: var(--font-mono);
+    }
+
+    /* Text highlight `==highlight==` */
+    .typora-content mark {
+      background-color: var(--mark-bg);
+      color: inherit;
+      padding: 0.1em 0.3em;
+      border-radius: 2px;
+    }
+
+    /* KaTeX Math Blocks */
+    .katex-display {
+      margin: 1.2em 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 6px 0;
+    }
+
+    /* Mermaid diagrams */
+    .mermaid {
+      margin: 1.5em 0;
+      text-align: center;
+      background: var(--code-bg);
+      padding: 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border-light);
+    }
+
+    /* Search Highlights */
+    .search-match {
+      background-color: #ffd54f !important;
+      color: #000000 !important;
+      border-radius: 2px;
+    }
+    .search-match.current-match {
+      background-color: #ff9800 !important;
+      color: #ffffff !important;
+    }
+
+    /* ==========================================================================
+       IN-PAGE FIND BAR (Typora Style Ctrl+F)
+       ========================================================================== */
+    #search-bar {
+      position: fixed;
+      top: 56px;
+      right: 24px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 12px;
+      box-shadow: var(--shadow);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 120;
+    }
+
+    #search-bar.show {
+      display: flex;
+    }
+
+    #search-input {
+      background: transparent;
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 13px;
+      color: var(--text-color);
+      outline: none;
+      width: 180px;
+    }
+
+    .search-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      min-width: 45px;
+    }
+
+    /* ==========================================================================
+       DRAG AND DROP OVERLAY
+       ========================================================================== */
+    #drop-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 500;
+      flex-direction: column;
+      gap: 12px;
+      border: 3px dashed rgba(255, 255, 255, 0.7);
+      margin: 12px;
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    #drop-overlay.active {
+      display: flex;
+    }
+
+    /* ==========================================================================
+       TOAST NOTIFICATION
+       ========================================================================== */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--sidebar-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       PRINT / EXPORT TO PDF
+       ========================================================================== */
+    @media print {
+      #navbar, #sidebar, #search-bar, #toast, .copy-btn {
+        display: none !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      #main-container {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #content-wrapper {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .code-block-wrapper {
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+      }
+      table {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header id="navbar">
+    <div class="nav-left">
+      <button class="nav-btn" id="toggle-sidebar" title="Toggle Outline (Ctrl+Shift+O / Cmd+Shift+O)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <span>Outline</span>
+      </button>
+
+      <button class="nav-btn" id="btn-open-file" title="Open Markdown File (Ctrl+O / Cmd+O)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Open...</span>
+      </button>
+      <input type="file" id="file-input" accept=".md,.markdown,.mdown,.mkd,.txt" style="display: none;">
+
+      <button class="nav-btn" id="btn-reload" title="Reload active file (Ctrl+R / Cmd+R)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="nav-center">
+      <span class="doc-title-badge" id="doc-title">Typora Reader</span>
+    </div>
+
+    <div class="nav-right">
+      <!-- Search button -->
+      <button class="nav-btn" id="btn-search" title="Find in document (Ctrl+F / Cmd+F)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+
+      <!-- Theme Switcher -->
+      <select class="theme-select" id="theme-selector" title="Switch Theme (Typora Themes)">
+        <option value="github">GitHub</option>
+        <option value="night">Night</option>
+        <option value="newsprint">Newsprint</option>
+        <option value="gothic">Gothic</option>
+      </select>
+
+      <!-- Content Width Selector -->
+      <select class="width-select" id="width-selector" title="Reading Width">
+        <option value="narrow">Narrow (680px)</option>
+        <option value="normal" selected>Normal (860px)</option>
+        <option value="wide">Wide (1120px)</option>
+        <option value="full">Full Width</option>
+      </select>
+
+      <!-- Print / Export to PDF -->
+      <button class="nav-btn" id="btn-print" title="Print or Export to PDF (Ctrl+P / Cmd+P)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Left Sidebar (Outline / TOC) -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">
+        <span>Table of Contents</span>
+        <span id="heading-count" style="font-weight: normal; font-size: 10px;">0 headings</span>
+      </div>
+      <input type="text" class="sidebar-search" id="outline-filter" placeholder="Filter headings...">
+    </div>
+    <ul class="outline-list" id="outline-list">
+      <!-- Dynamic headings injected here -->
+    </ul>
+    <div class="sidebar-footer">
+      <span id="stat-words">0 words</span>
+      <span id="stat-time">0 min read</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Container -->
+  <div id="main-container">
+    <main id="content-wrapper">
+      <article class="typora-content" id="markdown-output">
+        <!-- Rendered markdown inserted here -->
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Bar -->
+  <div id="search-bar">
+    <input type="text" id="search-input" placeholder="Find in document...">
+    <span class="search-count" id="search-count">0/0</span>
+    <button class="nav-btn" id="search-prev" title="Previous match">▲</button>
+    <button class="nav-btn" id="search-next" title="Next match">▼</button>
+    <button class="nav-btn" id="search-close" title="Close (Esc)">✕</button>
+  </div>
+
+  <!-- Drag & Drop Overlay -->
+  <div id="drop-overlay">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="17 8 12 3 7 8"></polyline>
+      <line x1="12" y1="3" x2="12" y2="15"></line>
+    </svg>
+    <span>Drop Markdown File to Open</span>
+  </div>
+
+  <!-- Toast Message -->
+  <div id="toast"></div>
+
+  <!-- Scripts: Local Assets with CDN fallback -->
+  <script src="assets/marked.min.js"></script>
+  <script src="assets/highlight.min.js"></script>
+  <script src="assets/katex.min.js"></script>
+  <script src="assets/katex-auto-render.min.js"></script>
+  <script src="assets/mermaid.min.js"></script>
+
+  <script>
+    /* ==========================================================================
+       TYPORA READER CORE LOGIC
+       ========================================================================== */
+    const state = {
+      currentFile: null,
+      currentContent: '',
+      headings: [],
+      activeHeadingIndex: -1,
+      serverMode: false,
+      serverFileMtime: null
+    };
+
+    // DOM Elements
+    const outputEl = document.getElementById('markdown-output');
+    const outlineListEl = document.getElementById('outline-list');
+    const docTitleEl = document.getElementById('doc-title');
+    const sidebarEl = document.getElementById('sidebar');
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+    const fileInput = document.getElementById('file-input');
+    const btnOpenFile = document.getElementById('btn-open-file');
+    const btnReload = document.getElementById('btn-reload');
+    const themeSelector = document.getElementById('theme-selector');
+    const widthSelector = document.getElementById('width-selector');
+    const hljsStyle = document.getElementById('hljs-style');
+    const dropOverlay = document.getElementById('drop-overlay');
+    const statWords = document.getElementById('stat-words');
+    const statTime = document.getElementById('stat-time');
+    const headingCount = document.getElementById('heading-count');
+    const outlineFilter = document.getElementById('outline-filter');
+    const toastEl = document.getElementById('toast');
+    const btnPrint = document.getElementById('btn-print');
+
+    // Search Elements
+    const searchBar = document.getElementById('search-bar');
+    const btnSearch = document.getElementById('btn-search');
+    const searchInput = document.getElementById('search-input');
+    const searchCount = document.getElementById('search-count');
+    const searchPrev = document.getElementById('search-prev');
+    const searchNext = document.getElementById('search-next');
+    const searchClose = document.getElementById('search-close');
+    let searchMatches = [];
+    let currentMatchIndex = -1;
+
+    // Toast helper
+    function showToast(message, duration = 2500) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), duration);
+    }
+
+    function escapeHtml(str) {
+      if (typeof str !== 'string') str = String(str || '');
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+    }
+
+    /* ==========================================================================
+       THEME & WIDTH MANAGEMENT
+       ========================================================================== */
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeSelector.value = theme;
+      try { localStorage.setItem('typora_theme', theme); } catch(e){}
+
+      // Switch highlight.js theme stylesheet
+      if (theme === 'night' || theme === 'gothic') {
+        hljsStyle.href = 'assets/highlight-github-dark.min.css';
+      } else {
+        hljsStyle.href = 'assets/highlight-github.min.css';
+      }
+    }
+
+    function setWidth(width) {
+      document.documentElement.setAttribute('data-width', width);
+      widthSelector.value = width;
+      try { localStorage.setItem('typora_width', width); } catch(e){}
+    }
+
+    themeSelector.addEventListener('change', (e) => setTheme(e.target.value));
+    widthSelector.addEventListener('change', (e) => setWidth(e.target.value));
+
+    /* ==========================================================================
+       SIDEBAR TOGGLE
+       ========================================================================== */
+    function toggleSidebar(forceState) {
+      const isOpen = forceState !== undefined ? forceState : !sidebarEl.classList.contains('open');
+      sidebarEl.classList.toggle('open', isOpen);
+      document.body.classList.toggle('sidebar-expanded', isOpen);
+      toggleSidebarBtn.classList.toggle('active', isOpen);
+      try { localStorage.setItem('typora_sidebar', isOpen ? 'open' : 'closed'); } catch(e){}
+    }
+
+    toggleSidebarBtn.addEventListener('click', () => toggleSidebar());
+
+    /* ==========================================================================
+       CUSTOM MARKED RENDERER (Marked v15 & legacy compatible)
+       ========================================================================== */
+    let headingIndexCounter = 0;
+
+    const customRenderer = {
+      code(token, maybeLang) {
+        const codeText = (typeof token === 'object' && token !== null) ? token.text : token;
+        const langRaw = (typeof token === 'object' && token !== null) ? token.lang : maybeLang;
+        const language = (langRaw || '').trim();
+        const codeStr = String(codeText || '');
+
+        // Handle Mermaid diagrams
+        if (language === 'mermaid') {
+          return `<div class="mermaid">${escapeHtml(codeStr)}</div>`;
+        }
+
+        let highlighted = escapeHtml(codeStr);
+        let validLang = false;
+
+        if (window.hljs && language && hljs.getLanguage(language)) {
+          try {
+            highlighted = hljs.highlight(codeStr, { language }).value;
+            validLang = true;
+          } catch (e) {
+            highlighted = escapeHtml(codeStr);
+          }
+        } else if (window.hljs && codeStr) {
+          try {
+            highlighted = hljs.highlightAuto(codeStr).value;
+          } catch (e) {
+            highlighted = escapeHtml(codeStr);
+          }
+        }
+
+        const langLabel = language ? language.toUpperCase() : 'CODE';
+
+        return `
+          <div class="code-block-wrapper">
+            <div class="code-header">
+              <span class="code-lang">${langLabel}</span>
+              <button class="copy-btn" onclick="copyCode(this)" title="Copy Code">Copy</button>
+            </div>
+            <pre><code class="hljs ${validLang ? 'language-' + language : ''}">${highlighted}</code></pre>
+          </div>
+        `;
+      },
+
+      heading(token, maybeDepth, maybeRaw) {
+        headingIndexCounter++;
+        let depth = 1;
+        let text = '';
+        let raw = '';
+
+        if (typeof token === 'object' && token !== null) {
+          depth = token.depth || 1;
+          raw = token.raw || '';
+          text = this.parser ? this.parser.parseInline(token.tokens) : (token.text || '');
+        } else {
+          text = String(token || '');
+          depth = maybeDepth || 1;
+          raw = maybeRaw || text;
+        }
+
+        const cleanRaw = String(raw || text).toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '');
+        const id = 'heading-' + headingIndexCounter + (cleanRaw ? '-' + encodeURIComponent(cleanRaw) : '');
+
+        return `<h${depth} id="${id}">${text}</h${depth}>`;
+      }
+    };
+
+    if (window.marked) {
+      marked.use({
+        gfm: true,
+        breaks: false,
+        renderer: customRenderer
+      });
+    }
+
+    // Copy code button handler
+    window.copyCode = function(button) {
+      const codeWrapper = button.closest('.code-block-wrapper');
+      const codeEl = codeWrapper.querySelector('pre code');
+      const codeText = codeEl ? codeEl.innerText : '';
+      navigator.clipboard.writeText(codeText).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.color = 'var(--sidebar-active)';
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.color = '';
+        }, 1500);
+      }).catch(err => {
+        showToast('Failed to copy');
+      });
+    };
+
+    /* ==========================================================================
+       RENDER MARKDOWN
+       ========================================================================== */
+    function renderMarkdown(mdText, title = null) {
+      try {
+        state.currentContent = mdText;
+        headingIndexCounter = 0;
+
+        // Handle Typora-style highlights ==highlight==
+        let preprocessed = mdText.replace(/==([^=\n]+)==/g, '<mark>$1</mark>');
+
+        // Convert safe inline math $math$ (avoiding currency like $1,500) to \(...\)
+        // Matches $ followed by non-space/non-digit, ending with non-space $
+        preprocessed = preprocessed.replace(/(?<![\w\$])\$(?!\d|\s)([^$\n]+?)(?<!\s|\$)\$(?![\w\$])/g, '\\($1\\)');
+
+        // Render HTML with marked
+        const html = marked.parse(preprocessed);
+        outputEl.innerHTML = html;
+
+        // Render Math using KaTeX auto-render if available
+        if (window.renderMathInElement) {
+          try {
+            renderMathInElement(outputEl, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '\\[', right: '\\]', display: true },
+                { left: '\\(', right: '\\)', display: false }
+              ],
+              ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+              throwOnError: false
+            });
+          } catch (e) {
+            console.warn('KaTeX render warning:', e);
+          }
+        }
+
+        // Render Mermaid diagrams
+        if (window.mermaid) {
+          try {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'night' || 
+                           document.documentElement.getAttribute('data-theme') === 'gothic';
+            mermaid.initialize({
+              startOnLoad: false,
+              theme: isDark ? 'dark' : 'default',
+              securityLevel: 'loose'
+            });
+            mermaid.run({
+              nodes: outputEl.querySelectorAll('.mermaid')
+            });
+          } catch (e) {
+            console.warn('Mermaid render warning:', e);
+          }
+        }
+
+        // Build Table of Contents / Outline
+        buildOutline();
+
+        // Update Statistics
+        updateStats(mdText);
+
+        // Update Title
+        if (title) {
+          state.currentFile = title;
+          docTitleEl.textContent = title;
+          document.title = title + ' - Typora Reader';
+        } else if (!state.currentFile) {
+          const firstH1 = outputEl.querySelector('h1');
+          const defaultName = firstH1 ? firstH1.textContent.trim() : 'Document.md';
+          docTitleEl.textContent = defaultName;
+          document.title = defaultName + ' - Typora Reader';
+        }
+      } catch (err) {
+        console.error('Render error:', err);
+        outputEl.innerHTML = `
+          <div style="padding: 24px; border: 1px solid #f85149; border-radius: 8px; background: rgba(248, 81, 73, 0.1);">
+            <h3 style="color: #f85149; margin-bottom: 8px;">Error Rendering Markdown</h3>
+            <p style="color: var(--text-muted); font-size: 13px; font-family: monospace;">${escapeHtml(err.message)}</p>
+          </div>
+        `;
+        showToast('Error rendering markdown: ' + err.message);
+      }
+    }
+
+    /* ==========================================================================
+       OUTLINE / TABLE OF CONTENTS BUILDER
+       ========================================================================== */
+    function buildOutline() {
+      const headingElements = outputEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      outlineListEl.innerHTML = '';
+      state.headings = [];
+
+      headingCount.textContent = `${headingElements.length} heading${headingElements.length === 1 ? '' : 's'}`;
+
+      if (headingElements.length === 0) {
+        outlineListEl.innerHTML = '<li style="padding: 16px; color: var(--text-muted); font-size: 12px; text-align: center;">No headings found</li>';
+        return;
+      }
+
+      headingElements.forEach((el, idx) => {
+        const level = parseInt(el.tagName.substring(1), 10);
+        const text = el.textContent.trim();
+        const id = el.id;
+
+        state.headings.push({ el, id, level, text, index: idx });
+
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.className = `outline-item outline-h${level}`;
+        a.textContent = text;
+        a.href = '#' + id;
+        a.title = text;
+        a.dataset.index = idx;
+
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          highlightOutlineItem(idx);
+        });
+
+        li.appendChild(a);
+        outlineListEl.appendChild(li);
+      });
+
+      setupScrollSpy();
+    }
+
+    // ScrollSpy to highlight active heading on scroll
+    let scrollSpyAttached = false;
+    function setupScrollSpy() {
+      if (scrollSpyAttached) return;
+      scrollSpyAttached = true;
+      window.addEventListener('scroll', onScrollThrottled, { passive: true });
+    }
+
+    let scrollTimeout = null;
+    function onScrollThrottled() {
+      if (scrollTimeout) return;
+      scrollTimeout = setTimeout(() => {
+        updateActiveHeading();
+        scrollTimeout = null;
+      }, 50);
+    }
+
+    function updateActiveHeading() {
+      if (state.headings.length === 0) return;
+      const scrollPos = window.scrollY + 100;
+      let activeIndex = 0;
+
+      for (let i = 0; i < state.headings.length; i++) {
+        if (state.headings[i].el.offsetTop <= scrollPos) {
+          activeIndex = i;
+        } else {
+          break;
+        }
+      }
+
+      highlightOutlineItem(activeIndex);
+    }
+
+    function highlightOutlineItem(index) {
+      if (state.activeHeadingIndex === index) return;
+      state.activeHeadingIndex = index;
+
+      const items = outlineListEl.querySelectorAll('.outline-item');
+      items.forEach((item, idx) => {
+        if (idx === index) {
+          item.classList.add('active');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
+    // Filter headings in outline
+    outlineFilter.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      const items = outlineListEl.querySelectorAll('.outline-item');
+      items.forEach(item => {
+        const matches = item.textContent.toLowerCase().includes(q);
+        item.style.display = matches ? 'block' : 'none';
+      });
+    });
+
+    /* ==========================================================================
+       STATS: WORD COUNT & READING TIME
+       ========================================================================== */
+    function updateStats(text) {
+      const cleanText = text.replace(/```[\s\S]*?```/g, '').replace(/[#*`~_\[\]()]/g, '');
+      const words = (cleanText.match(/\b\w+\b/g) || []).length;
+      const readMinutes = Math.max(1, Math.ceil(words / 200));
+
+      statWords.textContent = `${words.toLocaleString()} words`;
+      statTime.textContent = `${readMinutes} min read`;
+    }
+
+    /* ==========================================================================
+       IN-PAGE SEARCH (Typora Style Ctrl+F)
+       ========================================================================== */
+    function openSearch() {
+      searchBar.classList.add('show');
+      searchInput.focus();
+      searchInput.select();
+    }
+
+    function closeSearch() {
+      searchBar.classList.remove('show');
+      clearSearchHighlights();
+    }
+
+    function clearSearchHighlights() {
+      const marks = outputEl.querySelectorAll('mark.search-match');
+      marks.forEach(mark => {
+        const parent = mark.parentNode;
+        if (parent) {
+          parent.replaceChild(document.createTextNode(mark.textContent), mark);
+          parent.normalize();
+        }
+      });
+      searchMatches = [];
+      currentMatchIndex = -1;
+      searchCount.textContent = '0/0';
+    }
+
+    function performSearch(query) {
+      clearSearchHighlights();
+      if (!query || query.trim() === '') return;
+
+      const walker = document.createTreeWalker(outputEl, NodeFilter.SHOW_TEXT, null, false);
+      const textNodes = [];
+      let node;
+      while (node = walker.nextNode()) {
+        if (node.parentNode && !['SCRIPT', 'STYLE', 'CODE', 'PRE'].includes(node.parentNode.tagName)) {
+          textNodes.push(node);
+        }
+      }
+
+      const lowerQuery = query.toLowerCase();
+      textNodes.forEach(textNode => {
+        const text = textNode.nodeValue;
+        const lowerText = text.toLowerCase();
+        let index = lowerText.indexOf(lowerQuery);
+
+        if (index !== -1) {
+          const fragment = document.createDocumentFragment();
+          let lastIdx = 0;
+
+          while (index !== -1) {
+            fragment.appendChild(document.createTextNode(text.substring(lastIdx, index)));
+            const mark = document.createElement('mark');
+            mark.className = 'search-match';
+            mark.textContent = text.substring(index, index + query.length);
+            fragment.appendChild(mark);
+            searchMatches.push(mark);
+            lastIdx = index + query.length;
+            index = lowerText.indexOf(lowerQuery, lastIdx);
+          }
+
+          fragment.appendChild(document.createTextNode(text.substring(lastIdx)));
+          textNode.parentNode.replaceChild(fragment, textNode);
+        }
+      });
+
+      if (searchMatches.length > 0) {
+        jumpToMatch(0);
+      } else {
+        searchCount.textContent = '0/0';
+      }
+    }
+
+    function jumpToMatch(index) {
+      if (searchMatches.length === 0) return;
+      if (currentMatchIndex >= 0 && searchMatches[currentMatchIndex]) {
+        searchMatches[currentMatchIndex].classList.remove('current-match');
+      }
+
+      currentMatchIndex = (index + searchMatches.length) % searchMatches.length;
+      const target = searchMatches[currentMatchIndex];
+      target.classList.add('current-match');
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      searchCount.textContent = `${currentMatchIndex + 1}/${searchMatches.length}`;
+    }
+
+    btnSearch.addEventListener('click', openSearch);
+    searchClose.addEventListener('click', closeSearch);
+    searchInput.addEventListener('input', (e) => performSearch(e.target.value));
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        jumpToMatch(e.shiftKey ? currentMatchIndex - 1 : currentMatchIndex + 1);
+      } else if (e.key === 'Escape') {
+        closeSearch();
+      }
+    });
+    searchNext.addEventListener('click', () => jumpToMatch(currentMatchIndex + 1));
+    searchPrev.addEventListener('click', () => jumpToMatch(currentMatchIndex - 1));
+
+    /* ==========================================================================
+       FILE OPENING & DRAG-AND-DROP
+       ========================================================================== */
+    btnOpenFile.addEventListener('click', () => {
+      fileInput.value = ''; // Reset so selecting the same file triggers change
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) loadFile(file);
+    });
+
+    function loadFile(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target.result;
+        renderMarkdown(content, file.name);
+        try {
+          localStorage.setItem('typora_last_content', content);
+          localStorage.setItem('typora_last_filename', file.name);
+        } catch (e) {}
+        showToast(`Loaded: ${file.name}`);
+      };
+      reader.onerror = () => {
+        showToast('Error reading file');
+      };
+      reader.readAsText(file);
+    }
+
+    // Window Drag and Drop
+    window.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropOverlay.classList.add('active');
+    });
+
+    window.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.relatedTarget === null) {
+        dropOverlay.classList.remove('active');
+      }
+    });
+
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropOverlay.classList.remove('active');
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        loadFile(files[0]);
+      }
+    });
+
+    // Print Button
+    btnPrint.addEventListener('click', () => window.print());
+
+    /* ==========================================================================
+       BACKEND PYTHON SERVER INTEGRATION (Live Reload)
+       ========================================================================== */
+    async function checkServerMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const filePath = urlParams.get('file');
+
+      try {
+        const res = await fetch('/api/status', { method: 'GET' });
+        if (res.ok) {
+          const data = await res.json();
+          state.serverMode = true;
+
+          const fileToLoad = filePath || data.active_file;
+          if (fileToLoad) {
+            await fetchServerFile(fileToLoad);
+            startLiveWatch(fileToLoad);
+            return;
+          }
+        }
+      } catch (e) {
+        state.serverMode = false;
+      }
+
+      // If filePath passed via file:// URL query or standalone
+      if (filePath) {
+        try {
+          const res = await fetch(filePath);
+          if (res.ok) {
+            const text = await res.text();
+            renderMarkdown(text, decodeURIComponent(filePath).split('/').pop());
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // Restore last session or load sample
+      let lastContent = null;
+      let lastFilename = null;
+      try {
+        lastContent = localStorage.getItem('typora_last_content');
+        lastFilename = localStorage.getItem('typora_last_filename');
+      } catch(e){}
+
+      if (lastContent) {
+        renderMarkdown(lastContent, lastFilename || 'Untitled.md');
+      } else {
+        loadDefaultSample();
+      }
+    }
+
+    async function fetchServerFile(path) {
+      try {
+        const res = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
+        if (res.ok) {
+          const data = await res.json();
+          renderMarkdown(data.content, data.filename);
+          state.serverFileMtime = data.mtime;
+          state.currentFile = path;
+          showToast(`Opened: ${data.filename}`);
+        } else {
+          showToast('Could not load file from server');
+        }
+      } catch (err) {
+        console.error('Fetch server file failed:', err);
+        showToast('Error connecting to server');
+      }
+    }
+
+    function startLiveWatch(path) {
+      setInterval(async () => {
+        if (!state.serverMode || !path) return;
+        try {
+          const res = await fetch(`/api/watch?path=${encodeURIComponent(path)}&mtime=${state.serverFileMtime}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.modified) {
+              const prevScroll = window.scrollY;
+              await fetchServerFile(path);
+              window.scrollTo({ top: prevScroll });
+              showToast('File updated', 1000);
+            }
+          }
+        } catch (e) {}
+      }, 1000);
+    }
+
+    btnReload.addEventListener('click', async () => {
+      if (state.serverMode && state.currentFile) {
+        await fetchServerFile(state.currentFile);
+      } else {
+        location.reload();
+      }
+    });
+
+    /* ==========================================================================
+       KEYBOARD SHORTCUTS
+       ========================================================================== */
+    window.addEventListener('keydown', (e) => {
+      const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+
+      if (isCmdOrCtrl && e.key.toLowerCase() === 'o' && !e.shiftKey) {
+        e.preventDefault();
+        fileInput.value = '';
+        fileInput.click();
+      } else if ((isCmdOrCtrl && e.shiftKey && e.key.toLowerCase() === 'o') || (isCmdOrCtrl && e.key.toLowerCase() === 'b')) {
+        e.preventDefault();
+        toggleSidebar();
+      } else if (isCmdOrCtrl && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        openSearch();
+      } else if (e.key === 'Escape') {
+        if (searchBar.classList.contains('show')) {
+          closeSearch();
+        }
+      }
+    });
+
+    /* ==========================================================================
+       SAMPLE DOCUMENT (Fallback on First Run)
+       ========================================================================== */
+    async function loadDefaultSample() {
+      try {
+        const res = await fetch('sample.md');
+        if (res.ok) {
+          const text = await res.text();
+          renderMarkdown(text, 'sample.md');
+          return;
+        }
+      } catch (e) {}
+
+      const inlineSample = `# Welcome to Typora Reader
+
+A distraction-free, minimalist Markdown reader inspired by **Typora**.
+
+## Key Features
+- **Distraction-Free Typography**: Clean GitHub, Night, Newsprint, and Gothic themes.
+- **Outline Sidebar**: Instant Table of Contents with active ScrollSpy.
+- **Mathematics**: Full KaTeX support for inline ($E = mc^2$) and display equations.
+- **Code Syntax Highlighting**: Automatic detection and one-click copy button.
+- **Live File Reload**: Auto-refreshes when modified in Vim, Helix, or VS Code.
+- **Drag & Drop**: Drop any \`.md\` file directly into the window.
+
+Press <kbd>Ctrl</kbd> + <kbd>O</kbd> to open any Markdown file!
+`;
+      renderMarkdown(inlineSample, 'welcome.md');
+    }
+
+    /* ==========================================================================
+       INITIALIZATION
+       ========================================================================== */
+    function init() {
+      let savedTheme = 'github';
+      let savedWidth = 'normal';
+      let savedSidebar = null;
+
+      try {
+        savedTheme = localStorage.getItem('typora_theme') || 'github';
+        savedWidth = localStorage.getItem('typora_width') || 'normal';
+        savedSidebar = localStorage.getItem('typora_sidebar');
+      } catch(e){}
+
+      setTheme(savedTheme);
+      setWidth(savedWidth);
+
+      if (savedSidebar === 'open' || (savedSidebar === null && window.innerWidth > 1024)) {
+        toggleSidebar(true);
+      }
+
+      checkServerMode();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

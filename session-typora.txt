@@ -1,0 +1,108 @@
+================================================================================
+TYPORA READER - SESSION REFERENCE & CHEAT SHEET
+================================================================================
+Generated on: 2026-10-02
+Project Path: /Users/chris/Library/Mobile Documents/com~apple~CloudDocs/Personal/Programming/typora-Like
+
+--------------------------------------------------------------------------------
+1. QUICK START (macOS)
+--------------------------------------------------------------------------------
+The CLI is globally linked in your ~/.local/bin/typora-reader (in your PATH).
+
+From ANY directory in your terminal:
+
+  # 1. Auto-detect & open README.md or the local .md file in current folder:
+  typora-reader
+
+  # 2. Open a specific file in the current directory:
+  typora-reader testingwebsite.md
+
+  # 3. Open using relative paths:
+  typora-reader ../other-folder/notes.md
+
+  # 4. Open using home directory expansion:
+  typora-reader ~/Documents/notes.md
+
+  # 5. Open using full absolute path:
+  typora-reader "/Users/chris/path with spaces/file.md"
+
+Direct Browser (Zero CLI / Offline):
+  - Double-click reader.html in Safari, Chrome, or Zen Browser.
+  - Drag and drop any .md file directly onto the window.
+
+--------------------------------------------------------------------------------
+2. HOW TO PORT & INSTALL ON OMARCHY ARCH LINUX (HYPRLAND)
+--------------------------------------------------------------------------------
+Typora Reader uses only Python 3 standard library and offline bundled assets.
+Zero external dependencies, no npm build, and no pip install needed.
+
+Step 1: Transfer the typora-Like folder to Omarchy:
+  - Via Git:
+      cd ".../Programming/typora-Like"
+      git init && git add . && git commit -m "Typora reader"
+      # push to GitHub / local remote, then clone onto Omarchy
+  - Or via rsync/scp:
+      rsync -avz ".../Programming/typora-Like/" user@omarchy-ip:~/Programming/typora-Like/
+
+Step 2: Run the 1-step installer on Omarchy:
+      cd ~/Programming/typora-Like
+      ./install-omarchy.sh
+
+What this sets up on Omarchy:
+  ✔ ~/.local/bin/typora-reader symlinked (executable from any terminal)
+  ✔ ~/.local/share/applications/typora-reader.desktop installed
+  ✔ Vector icon installed to ~/.local/share/icons/hicolor/scalable/apps/
+  ✔ xdg-mime registered for text/markdown (opens on file double-click in Thunar/Dolphin/Yazi)
+  ✔ Hyprland App Mode: Launches with --app flag in Zen/Chrome for a clean,
+    borderless native window without browser tabs or address bar.
+  ✔ App launcher: Type "Typora" in SUPER + SPACE (Wofi / Walker / Rofi).
+
+--------------------------------------------------------------------------------
+3. KEYBOARD SHORTCUTS
+--------------------------------------------------------------------------------
+  Ctrl / Cmd + O          Open local Markdown file picker
+  Ctrl / Cmd + Shift + O  Toggle Outline / Table of Contents sidebar (or Ctrl/Cmd + B)
+  Ctrl / Cmd + F          Find in document (Enter: next, Shift+Enter: previous)
+  Ctrl / Cmd + P          Print / Clean Export to PDF (hides all UI chrome)
+  Ctrl / Cmd + R          Reload active document
+  Esc                     Dismiss search bar or modal overlay
+
+--------------------------------------------------------------------------------
+4. KEY FEATURES BUILT-IN
+--------------------------------------------------------------------------------
+  • Typora Themes:
+      - GitHub: Clean classic light mode
+      - Night: Slate dark mode
+      - Newsprint: Warm editorial Georgia serif typography
+      - Gothic: High-contrast modern dark mode
+  • Outline Sidebar:
+      - Real-time ScrollSpy tracking
+      - Header search filter
+      - Word count & estimated reading time
+  • Mathematics (KaTeX):
+      - 100% offline (local KaTeX JS, CSS, and WOFF2 fonts in assets/)
+      - Safe inline math ($E = mc^2$) that does NOT corrupt currency ($1,500)
+      - Block display equations ($$\int_{-\infty}^\infty e^{-x^2} dx = \sqrt{\pi}$$)
+  • Code Highlighting:
+      - Highlight.js with auto-detection (TypeScript, Python, Rust, Bash, etc.)
+      - One-click "Copy Code" button on hover
+  • Live Reload:
+      - Automatically detects file changes when edited in Neovim, Helix, or VS Code
+      - Preserves your scroll position on reload
+  • Task Lists:
+      - Interactive checkboxes (- [x])
+  • Diagrams:
+      - Native Mermaid rendering (flowcharts, sequence diagrams, state machines)
+
+--------------------------------------------------------------------------------
+5. FILE LOCATIONS
+--------------------------------------------------------------------------------
+  Main Reader UI:    typora-Like/reader.html
+  Python 3 Backend:  typora-Like/typora-reader.py
+  Shell Launcher:    typora-Like/typora-reader.sh
+  Omarchy Installer: typora-Like/install-omarchy.sh
+  Linux Desktop:     typora-Like/typora-reader.desktop
+  Showcase Sample:   typora-Like/sample.md
+  Offline Assets:    typora-Like/assets/ (marked, highlight, katex, mermaid, fonts)
+  Symlink (macOS):   ~/.local/bin/typora-reader -> typora-reader.sh
+================================================================================
