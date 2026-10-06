@@ -8,6 +8,13 @@ Zero external dependencies required (uses standard Python 3 and web technologies
 
 ## ✨ Features
 
+- **Split-Screen Live Markdown Editor (Live Markdown Preview)**:
+  - Toggle between **Edit**, **Split**, and **Preview** views instantly.
+  - Interactive split screen with raw Markdown editor on the left and live Typora-styled preview on the right.
+  - **Draggable Resizer**: Click and drag the vertical divider to adjust editor vs. preview width (double-click to reset 50/50).
+  - **Synchronized Scrolling**: Scroll either the editor or the preview and the other follows smoothly.
+  - **Editor Enhancements**: Line number gutter, character/word counters, <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd> indentations, auto-closing brackets, and copy/clear tools.
+  - **Save to Disk**: Save edits directly to file via <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> when using the Python server, or download/save in standalone mode.
 - **Typora Look & Feel**: Beautiful typography, precise margins, and authentic Typora themes:
   - **GitHub** (Light, classic clean Typora default)
   - **Night** (Dark mode with soft slate accents)
@@ -86,6 +93,8 @@ This will automatically:
 
 | Shortcut | Action |
 | :--- | :--- |
+| <kbd>Ctrl</kbd> / <kbd>Cmd</kbd> + <kbd>\</kbd> (or <kbd>E</kbd>) | Toggle Split Screen / Preview Mode |
+| <kbd>Ctrl</kbd> / <kbd>Cmd</kbd> + <kbd>S</kbd> | Save document changes to file / download |
 | <kbd>Ctrl</kbd> / <kbd>Cmd</kbd> + <kbd>O</kbd> | Open local Markdown file |
 | <kbd>Ctrl</kbd> / <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> | Toggle Outline Sidebar (or <kbd>Ctrl</kbd>+<kbd>B</kbd>) |
 | <kbd>Ctrl</kbd> / <kbd>Cmd</kbd> + <kbd>F</kbd> | Find text in document (Enter for next, Shift+Enter for prev) |

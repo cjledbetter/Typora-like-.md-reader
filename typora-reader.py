@@ -8,6 +8,7 @@ Zero external dependencies (uses standard Python 3 library only).
 import os
 import sys
 import json
+import time
 import socket
 import argparse
 import threading
@@ -82,14 +83,20 @@ class TyporaRequestHandler(SimpleHTTPRequestHandler):
             return
         super().log_message(format, *args)
 
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
+        super().end_headers()
+
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
         query = parse_qs(parsed.query)
 
-        # Root route: serve reader.html
+        # Root route: serve index.html
         if path == "/" or path == "/index.html":
-            self.path = "/reader.html"
+            self.path = "/index.html"
             return super().do_GET()
 
         # API: Status
@@ -178,6 +185,54 @@ class TyporaRequestHandler(SimpleHTTPRequestHandler):
         # Serve static assets
         return super().do_GET()
 
+    def do_POST(self):
+        global ACTIVE_FILE, ACTIVE_FILE_MTIME
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        # API: Save File
+        if path == "/api/save":
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length).decode("utf-8")
+            try:
+                data = json.loads(body)
+                target_path_str = data.get("path")
+                content = data.get("content", "")
+
+                target_path = None
+                if target_path_str:
+                    target_path = Path(unquote(target_path_str)).expanduser().resolve()
+                elif ACTIVE_FILE:
+                    target_path = ACTIVE_FILE
+
+                if not target_path:
+                    self.send_response(400)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"error": "No file path specified"}).encode("utf-8"))
+                    return
+
+                target_path.write_text(content, encoding="utf-8")
+                new_mtime = target_path.stat().st_mtime
+
+                if ACTIVE_FILE and target_path == ACTIVE_FILE:
+                    ACTIVE_FILE_MTIME = new_mtime
+
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Cache-Control", "no-cache")
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "mtime": new_mtime, "filename": target_path.name}).encode("utf-8"))
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
+            return
+
+        self.send_response(404)
+        self.end_headers()
+
 def launch_browser(url, use_app_mode=True):
     """Launch browser, preferring app window mode on Omarchy/Linux/macOS."""
     # List of common browsers supporting --app flag for minimal Typora feel
@@ -244,9 +299,11 @@ def main():
         print(f"\033[31mFailed to start server on port {port}:\033[0m {e}", file=sys.stderr)
         sys.exit(1)
 
-    url = f"http://127.0.0.1:{port}/"
+    params = []
     if ACTIVE_FILE:
-        url += f"?file={quote(str(ACTIVE_FILE))}"
+        params.append(f"file={quote(str(ACTIVE_FILE))}")
+    params.append(f"t={int(time.time())}")
+    url = f"http://127.0.0.1:{port}/?" + "&".join(params)
 
     print("\033[1;36m===================================================\033[0m")
     print("\033[1;32m  Typora Reader  \033[0m(macOS & Omarchy Arch Linux)")

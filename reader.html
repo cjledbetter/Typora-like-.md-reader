@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Typora Reader</title>
   
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="apple-touch-icon" href="assets/icon.svg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Typora">
+  <meta name="theme-color" content="#ffffff">
+  
   <!-- Highlight.js Theme -->
   <link id="hljs-style" rel="stylesheet" href="assets/highlight-github.min.css">
   
@@ -21,6 +29,7 @@
       --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
       --transition-speed: 0.2s;
       --sidebar-width: 280px;
+      --split-editor-width: 50%;
     }
 
     /* GitHub Theme (Default) */
@@ -230,7 +239,7 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--text-color);
-      max-width: 320px;
+      max-width: 260px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -238,6 +247,44 @@
       border-radius: 4px;
       background: var(--sidebar-hover);
       border: 1px solid var(--border-light);
+    }
+
+    .view-mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      background: var(--sidebar-hover);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11.5px;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .mode-btn:hover {
+      color: var(--text-color);
+    }
+
+    .mode-btn.active {
+      background: var(--bg-color);
+      color: var(--sidebar-active);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      font-weight: 600;
     }
 
     .theme-select, .width-select {
@@ -368,33 +415,319 @@
     }
 
     /* ==========================================================================
-       MAIN CONTENT CONTAINER
+       MAIN WORKSPACE CONTAINER & SPLIT SCREEN LAYOUT
        ========================================================================== */
     #main-container {
-      flex: 1;
-      margin-top: 48px;
+      position: fixed;
+      top: 48px;
+      left: 0;
+      right: 0;
+      bottom: 0;
       display: flex;
-      justify-content: center;
-      transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      width: 100%;
-      min-height: calc(100vh - 48px);
+      overflow: hidden;
+      transition: left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--bg-color);
     }
 
     body.sidebar-expanded #main-container {
-      margin-left: var(--sidebar-width);
+      left: var(--sidebar-width);
+    }
+
+    .workspace-pane {
+      height: 100%;
+      position: relative;
+    }
+
+    /* --------------------------------------------------------------------------
+       EDITOR PANE (LEFT)
+       -------------------------------------------------------------------------- */
+    #editor-pane {
+      width: var(--split-editor-width, 50%);
+      min-width: 200px;
+      max-width: calc(100% - 200px);
+      background: var(--bg-color);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .editor-header {
+      height: 38px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--border-light);
+      user-select: none;
+    }
+
+    .editor-header-left, .editor-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .editor-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--border-color);
+      color: var(--text-color);
+      font-family: var(--font-mono);
+    }
+
+    .editor-status-badge {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      transition: color 0.15s ease;
+    }
+
+    .editor-status-badge.modified {
+      color: #e36209;
+      font-weight: 600;
+    }
+
+    .editor-check-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      user-select: none;
+      margin-right: 4px;
+    }
+
+    .editor-check-label input {
+      cursor: pointer;
+      accent-color: var(--sidebar-active);
+    }
+
+    .editor-action-btn {
+      background: var(--bg-color);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-sans);
+      transition: all 0.15s ease;
+    }
+
+    .editor-action-btn:hover {
+      color: var(--text-color);
+      border-color: var(--border-color);
+      background: var(--sidebar-hover);
+    }
+
+    .editor-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg-color);
+    }
+
+    .editor-gutter {
+      width: auto;
+      min-width: 44px;
+      padding: 14px 8px 14px 4px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-light);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.6;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      white-space: pre;
+    }
+
+    #markdown-editor {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      background: transparent;
+      color: var(--text-color);
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.6;
+      tab-size: 2;
+      -moz-tab-size: 2;
+      padding: 14px 16px;
+      overflow-y: auto;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .editor-footer {
+      height: 26px;
+      min-height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: var(--sidebar-bg);
+      border-top: 1px solid var(--border-light);
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      user-select: none;
+    }
+
+    /* --------------------------------------------------------------------------
+       SPLIT RESIZER (DIVIDER)
+       -------------------------------------------------------------------------- */
+    .split-resizer {
+      width: 8px;
+      height: 100%;
+      background: var(--border-light);
+      cursor: col-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      user-select: none;
+      touch-action: none;
+      transition: background 0.15s ease;
+      z-index: 20;
+    }
+
+    .split-resizer:hover,
+    .split-resizer.dragging {
+      background: var(--sidebar-active);
+    }
+
+    .resizer-handle {
+      width: 2px;
+      height: 28px;
+      border-radius: 1px;
+      background: var(--text-muted);
+      opacity: 0.6;
+      transition: all 0.15s ease;
+    }
+
+    .split-resizer:hover .resizer-handle,
+    .split-resizer.dragging .resizer-handle {
+      height: 44px;
+      background: #ffffff;
+      opacity: 1;
+    }
+
+    /* --------------------------------------------------------------------------
+       PREVIEW PANE (RIGHT)
+       -------------------------------------------------------------------------- */
+    #preview-pane {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      min-width: 200px;
+      background: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      scroll-behavior: smooth;
     }
 
     #content-wrapper {
       width: 100%;
-      padding: 48px 32px 120px;
+      padding: 40px 32px 120px;
       transition: max-width 0.2s ease;
     }
 
-    /* Reading Widths */
-    html[data-width="narrow"] #content-wrapper { max-width: 680px; }
-    html[data-width="normal"] #content-wrapper { max-width: 860px; }
-    html[data-width="wide"] #content-wrapper   { max-width: 1120px; }
-    html[data-width="full"] #content-wrapper   { max-width: 100%; padding-left: 48px; padding-right: 48px; }
+    /* --------------------------------------------------------------------------
+       VIEW MODES & READING WIDTHS
+       -------------------------------------------------------------------------- */
+    /* Split View */
+    #main-container[data-view-mode="split"] #editor-pane {
+      display: flex;
+    }
+    #main-container[data-view-mode="split"] #split-resizer {
+      display: flex;
+    }
+    #main-container[data-view-mode="split"] #preview-pane {
+      display: block;
+      flex: 1;
+    }
+    #main-container[data-view-mode="split"] #content-wrapper {
+      max-width: 100%;
+      padding: 32px 36px 120px;
+    }
+
+    /* Preview-Only View */
+    #main-container[data-view-mode="preview"] #editor-pane {
+      display: none !important;
+    }
+    #main-container[data-view-mode="preview"] #split-resizer {
+      display: none !important;
+    }
+    #main-container[data-view-mode="preview"] #preview-pane {
+      display: flex !important;
+      width: 100% !important;
+      flex: 1 1 100% !important;
+      justify-content: center;
+    }
+    html[data-width="narrow"] #main-container[data-view-mode="preview"] #content-wrapper { max-width: 680px; }
+    html[data-width="normal"] #main-container[data-view-mode="preview"] #content-wrapper { max-width: 860px; }
+    html[data-width="wide"] #main-container[data-view-mode="preview"] #content-wrapper   { max-width: 1120px; }
+    html[data-width="full"] #main-container[data-view-mode="preview"] #content-wrapper   { max-width: 100%; padding-left: 48px; padding-right: 48px; }
+
+    /* Editor-Only View */
+    #main-container[data-view-mode="editor"] #editor-pane {
+      display: flex !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 1 100% !important;
+      border-right: none;
+    }
+    #main-container[data-view-mode="editor"] #split-resizer {
+      display: none !important;
+    }
+    #main-container[data-view-mode="editor"] #preview-pane {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .doc-title-badge {
+        max-width: 140px;
+      }
+      .width-select {
+        display: none;
+      }
+      #main-container[data-view-mode="split"] {
+        flex-direction: column;
+      }
+      #main-container[data-view-mode="split"] #editor-pane {
+        width: 100% !important;
+        height: 50% !important;
+        max-width: 100% !important;
+        border-right: none;
+        border-bottom: 1px solid var(--border-light);
+      }
+      #main-container[data-view-mode="split"] #split-resizer {
+        width: 100% !important;
+        height: 8px !important;
+        cursor: row-resize;
+      }
+      #main-container[data-view-mode="split"] #preview-pane {
+        width: 100% !important;
+        height: 50% !important;
+      }
+    }
 
     /* ==========================================================================
        TYPORA MARKDOWN TYPOGRAPHY
@@ -747,16 +1080,21 @@
        PRINT / EXPORT TO PDF
        ========================================================================== */
     @media print {
-      #navbar, #sidebar, #search-bar, #toast, .copy-btn {
+      #navbar, #sidebar, #search-bar, #toast, .copy-btn, #editor-pane, #split-resizer {
         display: none !important;
       }
       body {
         background: #ffffff !important;
         color: #000000 !important;
       }
-      #main-container {
+      #main-container, #preview-pane {
+        position: static !important;
         margin: 0 !important;
         padding: 0 !important;
+        overflow: visible !important;
+        height: auto !important;
+        width: 100% !important;
+        display: block !important;
       }
       #content-wrapper {
         max-width: 100% !important;
@@ -802,6 +1140,20 @@
     </div>
 
     <div class="nav-center">
+      <div class="view-mode-toggle" id="view-mode-toggle" role="group" aria-label="View Mode">
+        <button class="mode-btn" data-mode="editor" title="Editor Only">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span>Edit</span>
+        </button>
+        <button class="mode-btn active" data-mode="split" title="Split Screen (Ctrl+\ / Cmd+\)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+          <span>Split</span>
+        </button>
+        <button class="mode-btn" data-mode="preview" title="Preview Only">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>Preview</span>
+        </button>
+      </div>
       <span class="doc-title-badge" id="doc-title">Typora Reader</span>
     </div>
 
@@ -859,13 +1211,61 @@
     </div>
   </aside>
 
-  <!-- Main Content Container -->
-  <div id="main-container">
-    <main id="content-wrapper">
-      <article class="typora-content" id="markdown-output">
-        <!-- Rendered markdown inserted here -->
-      </article>
-    </main>
+  <!-- Main Workspace Container -->
+  <div id="main-container" data-view-mode="split">
+    <!-- Left Column: Markdown Editor -->
+    <section id="editor-pane" class="workspace-pane">
+      <div class="editor-header">
+        <div class="editor-header-left">
+          <span class="editor-tag">MARKDOWN</span>
+          <span class="editor-status-badge" id="editor-status-badge">Saved</span>
+        </div>
+        <div class="editor-header-right">
+          <label class="editor-check-label" title="Synchronize scrolling between editor and preview">
+            <input type="checkbox" id="sync-scroll-check" checked>
+            <span>Sync Scroll</span>
+          </label>
+          <button class="editor-action-btn" id="btn-save-content" title="Save / Download File (Ctrl+S / Cmd+S)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            <span>Save</span>
+          </button>
+          <button class="editor-action-btn" id="btn-copy-markdown" title="Copy raw Markdown to clipboard">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy</span>
+          </button>
+          <button class="editor-action-btn" id="btn-clear-editor" title="Clear Editor">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="editor-body" id="editor-body">
+        <div class="editor-gutter" id="editor-gutter">
+          <div class="editor-line-numbers" id="editor-line-numbers">1</div>
+        </div>
+        <textarea id="markdown-editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Type or paste Markdown here..."></textarea>
+      </div>
+
+      <div class="editor-footer">
+        <span id="editor-cursor-pos">Ln 1, Col 1</span>
+        <span id="editor-counts">0 lines · 0 words · 0 chars</span>
+      </div>
+    </section>
+
+    <!-- Split Resizer (Draggable divider) -->
+    <div id="split-resizer" class="split-resizer" role="separator" aria-orientation="vertical" title="Drag to resize panes (Double click to reset 50/50)">
+      <div class="resizer-handle"></div>
+    </div>
+
+    <!-- Right Column: Rendered Markdown Preview -->
+    <section id="preview-pane" class="workspace-pane">
+      <main id="content-wrapper">
+        <article class="typora-content" id="markdown-output">
+          <!-- Rendered markdown inserted here -->
+        </article>
+      </main>
+    </section>
   </div>
 
   <!-- Search Bar -->
@@ -907,10 +1307,28 @@
       headings: [],
       activeHeadingIndex: -1,
       serverMode: false,
-      serverFileMtime: null
+      serverFileMtime: null,
+      viewMode: 'split',
+      isModified: false
     };
 
-    // DOM Elements
+    // DOM Elements - Workspace & Split Panes
+    const mainContainer = document.getElementById('main-container');
+    const editorPane = document.getElementById('editor-pane');
+    const splitResizer = document.getElementById('split-resizer');
+    const previewPane = document.getElementById('preview-pane');
+    const markdownEditor = document.getElementById('markdown-editor');
+    const lineNumbersEl = document.getElementById('editor-line-numbers');
+    const editorStatusBadge = document.getElementById('editor-status-badge');
+    const editorCursorPos = document.getElementById('editor-cursor-pos');
+    const editorCounts = document.getElementById('editor-counts');
+    const syncScrollCheck = document.getElementById('sync-scroll-check');
+    const btnSaveContent = document.getElementById('btn-save-content');
+    const btnCopyMarkdown = document.getElementById('btn-copy-markdown');
+    const btnClearEditor = document.getElementById('btn-clear-editor');
+    const viewModeBtns = document.querySelectorAll('.view-mode-toggle .mode-btn');
+
+    // DOM Elements - Viewer & Navigation
     const outputEl = document.getElementById('markdown-output');
     const outlineListEl = document.getElementById('outline-list');
     const docTitleEl = document.getElementById('doc-title');
@@ -955,6 +1373,120 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+    }
+
+    /* ==========================================================================
+       EDITOR & SPLIT SCREEN MANAGEMENT
+       ========================================================================== */
+    function setModified(isMod) {
+      state.isModified = isMod;
+      if (isMod) {
+        editorStatusBadge.textContent = '● Modified';
+        editorStatusBadge.classList.add('modified');
+      } else {
+        editorStatusBadge.textContent = 'Saved';
+        editorStatusBadge.classList.remove('modified');
+      }
+    }
+
+    function updateLineNumbers() {
+      const lineCount = (markdownEditor.value.split('\n').length) || 1;
+      let nums = '';
+      for (let i = 1; i <= lineCount; i++) {
+        nums += i + '\n';
+      }
+      lineNumbersEl.textContent = nums;
+    }
+
+    function updateEditorStats() {
+      const text = markdownEditor.value;
+      const lines = text.split('\n').length;
+      const chars = text.length;
+      const cleanWords = text.replace(/```[\s\S]*?```/g, '').replace(/[#*`~_\[\]()]/g, '');
+      const words = (cleanWords.match(/\b\w+\b/g) || []).length;
+      editorCounts.textContent = `${lines} lines · ${words.toLocaleString()} words · ${chars.toLocaleString()} chars`;
+
+      // Cursor position
+      const selStart = markdownEditor.selectionStart || 0;
+      const sub = text.substring(0, selStart);
+      const curLines = sub.split('\n');
+      const curLn = curLines.length;
+      const curCol = curLines[curLines.length - 1].length + 1;
+      editorCursorPos.textContent = `Ln ${curLn}, Col ${curCol}`;
+    }
+
+    function setSplitRatio(pct) {
+      const clamped = Math.max(15, Math.min(85, pct));
+      document.documentElement.style.setProperty('--split-editor-width', `${clamped}%`);
+      try { localStorage.setItem('typora_split_ratio', clamped); } catch(e){}
+    }
+
+    function setViewMode(mode) {
+      state.viewMode = mode;
+      mainContainer.setAttribute('data-view-mode', mode);
+      viewModeBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+      try { localStorage.setItem('typora_view_mode', mode); } catch(e){}
+
+      if (mode === 'split' || mode === 'editor') {
+        if (markdownEditor.value !== state.currentContent) {
+          markdownEditor.value = state.currentContent;
+        }
+        updateLineNumbers();
+        updateEditorStats();
+      }
+    }
+
+    viewModeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setViewMode(btn.dataset.mode);
+      });
+    });
+
+    /* ==========================================================================
+       FILE SAVE / EXPORT
+       ========================================================================== */
+    async function saveContent() {
+      const content = markdownEditor.value;
+      const filename = state.currentFile || 'document.md';
+
+      if (state.serverMode && state.currentFile) {
+        try {
+          const res = await fetch('/api/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify({ path: state.currentFile, content: content })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            state.serverFileMtime = data.mtime;
+            setModified(false);
+            showToast(`Saved to file: ${data.filename || filename}`);
+            return;
+          }
+        } catch (err) {
+          console.warn('Server save failed, falling back to download:', err);
+        }
+      }
+
+      // Standalone browser / iPad fallback: save to localStorage & download file
+      try {
+        localStorage.setItem('typora_last_content', content);
+        localStorage.setItem('typora_last_filename', filename);
+      } catch(e){}
+
+      const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename.endsWith('.md') ? filename : filename + '.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+
+      setModified(false);
+      showToast(`Saved: ${a.download}`);
     }
 
     /* ==========================================================================
@@ -1095,10 +1627,17 @@
     /* ==========================================================================
        RENDER MARKDOWN
        ========================================================================== */
-    function renderMarkdown(mdText, title = null) {
+    function renderMarkdown(mdText, title = null, updateEditorText = true) {
       try {
         state.currentContent = mdText;
         headingIndexCounter = 0;
+
+        if (updateEditorText && markdownEditor && markdownEditor.value !== mdText) {
+          markdownEditor.value = mdText;
+          updateLineNumbers();
+          updateEditorStats();
+          setModified(false);
+        }
 
         // Handle Typora-style highlights ==highlight==
         let preprocessed = mdText.replace(/==([^=\n]+)==/g, '<mark>$1</mark>');
@@ -1223,6 +1762,7 @@
     function setupScrollSpy() {
       if (scrollSpyAttached) return;
       scrollSpyAttached = true;
+      if (previewPane) previewPane.addEventListener('scroll', onScrollThrottled, { passive: true });
       window.addEventListener('scroll', onScrollThrottled, { passive: true });
     }
 
@@ -1237,7 +1777,7 @@
 
     function updateActiveHeading() {
       if (state.headings.length === 0) return;
-      const scrollPos = window.scrollY + 100;
+      const scrollPos = ((previewPane && previewPane.scrollTop) || window.scrollY || 0) + 100;
       let activeIndex = 0;
 
       for (let i = 0; i < state.headings.length; i++) {
@@ -1524,8 +2064,9 @@
           if (res.ok) {
             const data = await res.json();
             if (data.modified) {
-              const prevScroll = window.scrollY;
+              const prevScroll = (previewPane && previewPane.scrollTop) || window.scrollY;
               await fetchServerFile(path);
+              if (previewPane) previewPane.scrollTop = prevScroll;
               window.scrollTo({ top: prevScroll });
               showToast('File updated', 1000);
             }
@@ -1543,12 +2084,211 @@
     });
 
     /* ==========================================================================
+       EDITOR & SPLIT SCREEN LISTENERS
+       ========================================================================== */
+    let renderDebounceTimer = null;
+    markdownEditor.addEventListener('input', () => {
+      updateLineNumbers();
+      updateEditorStats();
+      setModified(true);
+
+      if (renderDebounceTimer) clearTimeout(renderDebounceTimer);
+      renderDebounceTimer = setTimeout(() => {
+        renderMarkdown(markdownEditor.value, state.currentFile, false);
+        try {
+          localStorage.setItem('typora_last_content', markdownEditor.value);
+        } catch(e){}
+      }, 50);
+    });
+
+    markdownEditor.addEventListener('keyup', updateEditorStats);
+    markdownEditor.addEventListener('click', updateEditorStats);
+    markdownEditor.addEventListener('select', updateEditorStats);
+
+    // Tab indentation & bracket auto-pairing
+    markdownEditor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = markdownEditor.selectionStart;
+        const end = markdownEditor.selectionEnd;
+        const val = markdownEditor.value;
+
+        if (!e.shiftKey) {
+          if (start === end) {
+            markdownEditor.setRangeText('  ', start, end, 'end');
+          } else {
+            const before = val.substring(0, start);
+            const after = val.substring(end);
+            const lineStart = before.lastIndexOf('\n') + 1;
+            const fullSelection = val.substring(lineStart, end);
+            const indented = fullSelection.split('\n').map(l => '  ' + l).join('\n');
+            markdownEditor.value = val.substring(0, lineStart) + indented + after;
+            markdownEditor.selectionStart = start + 2;
+            markdownEditor.selectionEnd = end + (indented.length - fullSelection.length);
+          }
+        } else {
+          const before = val.substring(0, start);
+          const after = val.substring(end);
+          const lineStart = before.lastIndexOf('\n') + 1;
+          const fullSelection = val.substring(lineStart, end);
+          const unindented = fullSelection.split('\n').map(l => l.startsWith('  ') ? l.substring(2) : (l.startsWith(' ') ? l.substring(1) : l)).join('\n');
+          markdownEditor.value = val.substring(0, lineStart) + unindented + after;
+          markdownEditor.selectionStart = Math.max(lineStart, start - 2);
+          markdownEditor.selectionEnd = Math.max(lineStart, end - (fullSelection.length - unindented.length));
+        }
+        updateLineNumbers();
+        updateEditorStats();
+        setModified(true);
+        renderMarkdown(markdownEditor.value, state.currentFile, false);
+      }
+
+      // Bracket and quote auto-wrap for selections
+      const pairs = { '(': ')', '[': ']', '{': '}', '`': '`', '"': '"', "'": "'" };
+      if (pairs[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const start = markdownEditor.selectionStart;
+        const end = markdownEditor.selectionEnd;
+        if (start !== end) {
+          e.preventDefault();
+          const sel = markdownEditor.value.substring(start, end);
+          markdownEditor.setRangeText(`${e.key}${sel}${pairs[e.key]}`, start, end, 'select');
+          markdownEditor.selectionStart = start + 1;
+          markdownEditor.selectionEnd = end + 1;
+          updateLineNumbers();
+          updateEditorStats();
+          setModified(true);
+          renderMarkdown(markdownEditor.value, state.currentFile, false);
+        }
+      }
+    });
+
+    // Synchronized Scrolling
+    let isSyncingScroll = false;
+    let syncScrollTimeout = null;
+
+    markdownEditor.addEventListener('scroll', () => {
+      lineNumbersEl.scrollTop = markdownEditor.scrollTop;
+
+      if (!syncScrollCheck.checked || isSyncingScroll || state.viewMode !== 'split') return;
+      isSyncingScroll = true;
+
+      const editorScrollable = markdownEditor.scrollHeight - markdownEditor.clientHeight;
+      if (editorScrollable > 0) {
+        const pct = markdownEditor.scrollTop / editorScrollable;
+        const previewScrollable = previewPane.scrollHeight - previewPane.clientHeight;
+        previewPane.scrollTop = pct * previewScrollable;
+      }
+
+      if (syncScrollTimeout) clearTimeout(syncScrollTimeout);
+      syncScrollTimeout = setTimeout(() => { isSyncingScroll = false; }, 30);
+    });
+
+    previewPane.addEventListener('scroll', () => {
+      if (!syncScrollCheck.checked || isSyncingScroll || state.viewMode !== 'split') return;
+      isSyncingScroll = true;
+
+      const previewScrollable = previewPane.scrollHeight - previewPane.clientHeight;
+      if (previewScrollable > 0) {
+        const pct = previewPane.scrollTop / previewScrollable;
+        const editorScrollable = markdownEditor.scrollHeight - markdownEditor.clientHeight;
+        markdownEditor.scrollTop = pct * editorScrollable;
+        lineNumbersEl.scrollTop = markdownEditor.scrollTop;
+      }
+
+      if (syncScrollTimeout) clearTimeout(syncScrollTimeout);
+      syncScrollTimeout = setTimeout(() => { isSyncingScroll = false; }, 30);
+    });
+
+    // Editor Action Buttons
+    btnSaveContent.addEventListener('click', saveContent);
+
+    btnCopyMarkdown.addEventListener('click', () => {
+      const text = markdownEditor.value;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Markdown copied to clipboard');
+      }).catch(() => {
+        showToast('Failed to copy');
+      });
+    });
+
+    btnClearEditor.addEventListener('click', () => {
+      if (!markdownEditor.value.trim()) return;
+      if (confirm('Clear editor content?')) {
+        markdownEditor.value = '';
+        renderMarkdown('', 'Untitled.md', false);
+        updateLineNumbers();
+        updateEditorStats();
+        setModified(true);
+        showToast('Editor cleared');
+      }
+    });
+
+    // Split Resizer Dragging
+    let isDraggingSplit = false;
+
+    function startSplitDrag(e) {
+      isDraggingSplit = true;
+      splitResizer.classList.add('dragging');
+      document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
+      document.body.style.userSelect = 'none';
+      if (e.pointerId && splitResizer.setPointerCapture) {
+        try { splitResizer.setPointerCapture(e.pointerId); } catch(err){}
+      }
+    }
+
+    function doSplitDrag(e) {
+      if (!isDraggingSplit) return;
+      const rect = mainContainer.getBoundingClientRect();
+      const isMobileStacked = window.innerWidth <= 768;
+
+      if (isMobileStacked) {
+        const offsetTop = e.clientY - rect.top;
+        let pct = (offsetTop / rect.height) * 100;
+        pct = Math.max(15, Math.min(85, pct));
+        editorPane.style.height = `${pct}%`;
+        previewPane.style.height = `${100 - pct}%`;
+      } else {
+        const offsetLeft = e.clientX - rect.left;
+        let pct = (offsetLeft / rect.width) * 100;
+        setSplitRatio(pct);
+      }
+    }
+
+    function stopSplitDrag(e) {
+      if (!isDraggingSplit) return;
+      isDraggingSplit = false;
+      splitResizer.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      if (e.pointerId && splitResizer.releasePointerCapture) {
+        try { splitResizer.releasePointerCapture(e.pointerId); } catch(err){}
+      }
+    }
+
+    splitResizer.addEventListener('pointerdown', startSplitDrag);
+    window.addEventListener('pointermove', doSplitDrag);
+    window.addEventListener('pointerup', stopSplitDrag);
+    window.addEventListener('pointercancel', stopSplitDrag);
+
+    splitResizer.addEventListener('dblclick', () => {
+      setSplitRatio(50);
+      showToast('Split ratio reset to 50/50');
+    });
+
+    /* ==========================================================================
        KEYBOARD SHORTCUTS
        ========================================================================== */
     window.addEventListener('keydown', (e) => {
       const isCmdOrCtrl = e.metaKey || e.ctrlKey;
 
-      if (isCmdOrCtrl && e.key.toLowerCase() === 'o' && !e.shiftKey) {
+      if (isCmdOrCtrl && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveContent();
+      } else if (isCmdOrCtrl && (e.key === '\\' || e.key.toLowerCase() === 'e')) {
+        e.preventDefault();
+        const nextMode = state.viewMode === 'split' ? 'preview' : 'split';
+        setViewMode(nextMode);
+        showToast(nextMode === 'split' ? 'Split View' : 'Preview View');
+      } else if (isCmdOrCtrl && e.key.toLowerCase() === 'o' && !e.shiftKey) {
         e.preventDefault();
         fileInput.value = '';
         fileInput.click();
@@ -1602,17 +2342,29 @@ Press <kbd>Ctrl</kbd> + <kbd>O</kbd> to open any Markdown file!
       let savedTheme = 'github';
       let savedWidth = 'normal';
       let savedSidebar = null;
+      let savedMode = 'split';
+      let savedRatio = 50;
 
       try {
         savedTheme = localStorage.getItem('typora_theme') || 'github';
         savedWidth = localStorage.getItem('typora_width') || 'normal';
         savedSidebar = localStorage.getItem('typora_sidebar');
+        savedMode = localStorage.getItem('typora_view_mode') || 'split';
+        savedRatio = parseFloat(localStorage.getItem('typora_split_ratio')) || 50;
       } catch(e){}
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const modeParam = urlParams.get('mode');
+      if (modeParam && ['split', 'editor', 'preview'].includes(modeParam)) {
+        savedMode = modeParam;
+      }
 
       setTheme(savedTheme);
       setWidth(savedWidth);
+      setSplitRatio(savedRatio);
+      setViewMode(savedMode);
 
-      if (savedSidebar === 'open' || (savedSidebar === null && window.innerWidth > 1024)) {
+      if (savedSidebar === 'open' && savedMode === 'preview') {
         toggleSidebar(true);
       }
 

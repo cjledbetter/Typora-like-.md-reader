@@ -1,0 +1,16 @@
+{
+  "name": "Typora Reader",
+  "short_name": "Typora",
+  "description": "Minimalist distraction-free Markdown reader and split-screen editor inspired by Typora",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml"
+    }
+  ]
+}
