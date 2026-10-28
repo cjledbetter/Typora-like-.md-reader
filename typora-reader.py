@@ -21,6 +21,7 @@ from urllib.parse import urlparse, parse_qs, unquote, quote
 BASE_DIR = Path(__file__).resolve().parent
 ACTIVE_FILE = None
 ACTIVE_FILE_MTIME = None
+LAUNCH_CWD = Path.cwd()
 
 def find_available_port(start_port=8333, max_attempts=50):
     """Find an open TCP port starting from start_port."""
@@ -201,7 +202,12 @@ class TyporaRequestHandler(SimpleHTTPRequestHandler):
 
                 target_path = None
                 if target_path_str:
-                    target_path = Path(unquote(target_path_str)).expanduser().resolve()
+                    p = Path(unquote(target_path_str)).expanduser()
+                    if not p.is_absolute() and LAUNCH_CWD:
+                        p = (LAUNCH_CWD / p).resolve()
+                    else:
+                        p = p.resolve()
+                    target_path = p
                 elif ACTIVE_FILE:
                     target_path = ACTIVE_FILE
 
@@ -249,8 +255,8 @@ def launch_browser(url, use_app_mode=True):
         for b in candidate_app_browsers:
             cmd = [b, f"--app={url}"]
             try:
-                subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                return True
+                proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return proc
             except FileNotFoundError:
                 continue
 
@@ -318,7 +324,17 @@ def main():
 
     if not args.no_browser:
         app_mode = not args.standard_browser
-        threading.Timer(0.3, lambda: launch_browser(url, use_app_mode=app_mode)).start()
+        def monitor_browser_lifecycle():
+            time.sleep(0.3)
+            proc = launch_browser(url, use_app_mode=app_mode)
+            if proc and hasattr(proc, 'wait'):
+                try:
+                    proc.wait()
+                    # Browser window closed by user - gracefully stop server
+                    httpd.shutdown()
+                except Exception:
+                    pass
+        threading.Thread(target=monitor_browser_lifecycle, daemon=True).start()
 
     try:
         httpd.serve_forever()

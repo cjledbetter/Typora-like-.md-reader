@@ -1309,7 +1309,9 @@
       serverMode: false,
       serverFileMtime: null,
       viewMode: 'split',
-      isModified: false
+      isModified: false,
+      fileHandle: null,
+      isSaving: false
     };
 
     // DOM Elements - Workspace & Split Panes
@@ -1449,8 +1451,28 @@
        ========================================================================== */
     async function saveContent() {
       const content = markdownEditor.value;
-      const filename = state.currentFile || 'document.md';
+      const filename = state.currentFile ? state.currentFile.split('/').pop() : (state.fileHandle ? state.fileHandle.name : 'document.md');
+      state.isSaving = true;
 
+      // Update badge to saving status
+      if (editorStatusBadge) editorStatusBadge.textContent = 'Saving...';
+
+      // 1. Direct in-place file system writing via File System Access API (Chromium / Brave / Edge)
+      if (state.fileHandle && state.fileHandle.createWritable) {
+        try {
+          const writable = await state.fileHandle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          setModified(false);
+          showToast(`Saved to file: ${state.fileHandle.name || filename}`);
+          setTimeout(() => { state.isSaving = false; }, 2000);
+          return;
+        } catch (err) {
+          console.warn('File handle write failed, falling back to server/dialog:', err);
+        }
+      }
+
+      // 2. If running with active Python backend server and known file path:
       if (state.serverMode && state.currentFile) {
         try {
           const res = await fetch('/api/save', {
@@ -1458,19 +1480,55 @@
             headers: { 'Content-Type': 'application/json; charset=utf-8' },
             body: JSON.stringify({ path: state.currentFile, content: content })
           });
-          if (res.ok) {
-            const data = await res.json();
+          const data = await res.json();
+          if (res.ok && data.success) {
             state.serverFileMtime = data.mtime;
             setModified(false);
             showToast(`Saved to file: ${data.filename || filename}`);
+            setTimeout(() => { state.isSaving = false; }, 2000);
             return;
+          } else {
+            console.error('Server save error:', data.error);
+            showToast(`Server save error: ${data.error || 'Failed'}`, 3500);
           }
         } catch (err) {
-          console.warn('Server save failed, falling back to download:', err);
+          console.warn('Server save connection failed:', err);
+          showToast('Server disconnected, opening file save dialog...', 2000);
         }
       }
 
-      // Standalone browser / iPad fallback: save to localStorage & download file
+      // 3. Prompt user with native File System Access save picker if available
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [{
+              description: 'Markdown File',
+              accept: { 'text/markdown': ['.md', '.markdown', '.txt'] }
+            }]
+          });
+          if (handle) {
+            const writable = await handle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            state.fileHandle = handle;
+            state.currentFile = handle.name;
+            setModified(false);
+            showToast(`Saved to file: ${handle.name}`);
+            setTimeout(() => { state.isSaving = false; }, 2000);
+            return;
+          }
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            state.isSaving = false;
+            if (editorStatusBadge) editorStatusBadge.textContent = 'Unsaved';
+            return; // User cancelled
+          }
+          console.warn('showSaveFilePicker failed, falling back to download:', err);
+        }
+      }
+
+      // 4. Standalone browser / iPad fallback: save to localStorage & download file
       try {
         localStorage.setItem('typora_last_content', content);
         localStorage.setItem('typora_last_filename', filename);
@@ -1487,6 +1545,7 @@
 
       setModified(false);
       showToast(`Saved: ${a.download}`);
+      setTimeout(() => { state.isSaving = false; }, 2000);
     }
 
     /* ==========================================================================
@@ -1932,7 +1991,36 @@
     /* ==========================================================================
        FILE OPENING & DRAG-AND-DROP
        ========================================================================== */
-    btnOpenFile.addEventListener('click', () => {
+    btnOpenFile.addEventListener('click', async () => {
+      // Prefer modern File System Access API in Chromium/Brave for direct save capability
+      if (window.showOpenFilePicker) {
+        try {
+          const [handle] = await window.showOpenFilePicker({
+            types: [{
+              description: 'Markdown Files',
+              accept: { 'text/markdown': ['.md', '.markdown', '.mdown', '.mkd', '.txt'] }
+            }],
+            multiple: false
+          });
+          if (handle) {
+            const file = await handle.getFile();
+            const text = await file.text();
+            state.fileHandle = handle;
+            state.currentFile = file.name;
+            renderMarkdown(text, file.name);
+            try {
+              localStorage.setItem('typora_last_content', text);
+              localStorage.setItem('typora_last_filename', file.name);
+            } catch (e) {}
+            showToast(`Opened: ${file.name}`);
+            return;
+          }
+        } catch (err) {
+          if (err.name === 'AbortError') return; // User cancelled
+          console.warn('showOpenFilePicker failed, falling back to input:', err);
+        }
+      }
+
       fileInput.value = ''; // Reset so selecting the same file triggers change
       fileInput.click();
     });
@@ -2058,12 +2146,16 @@
 
     function startLiveWatch(path) {
       setInterval(async () => {
-        if (!state.serverMode || !path) return;
+        if (!state.serverMode || !path || state.isSaving) return;
         try {
           const res = await fetch(`/api/watch?path=${encodeURIComponent(path)}&mtime=${state.serverFileMtime}`);
           if (res.ok) {
             const data = await res.json();
-            if (data.modified) {
+            if (data.modified && !state.isSaving) {
+              if (state.isModified) {
+                // Protect unsaved in-editor work from being wiped out by external poll
+                return;
+              }
               const prevScroll = (previewPane && previewPane.scrollTop) || window.scrollY;
               await fetchServerFile(path);
               if (previewPane) previewPane.scrollTop = prevScroll;
@@ -2107,6 +2199,13 @@
 
     // Tab indentation & bracket auto-pairing
     markdownEditor.addEventListener('keydown', (e) => {
+      // Immediate Ctrl+S save from inside the editor
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveContent();
+        return;
+      }
+
       if (e.key === 'Tab') {
         e.preventDefault();
         const start = markdownEditor.selectionStart;
