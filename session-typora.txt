@@ -106,3 +106,76 @@ What this sets up on Omarchy:
   Offline Assets:    typora-Like/assets/ (marked, highlight, katex, mermaid, fonts)
   Symlink (macOS):   ~/.local/bin/typora-reader -> typora-reader.sh
 ================================================================================
+
+--------------------------------------------------------------------------------
+6. TYPORA-RUSTREADER MULTI-AGENT PLAN (2026-11-01)
+--------------------------------------------------------------------------------
+  Blueprint File:    /home/cjledbetter/Documents/Programming/typora-like-.md-reader/AGENT.MD
+  Target Binary:     typora-rust-reader (~/.local/bin/typora-rust-reader)
+  Architecture:      Native Rust (tao + wry WebKitGTK/WKWebView + notify inotify
+                     + rfd GTK4/Wayland dialogs + pulldown-cmark + rust-embed)
+  Why Rust Native:   Eliminates localhost port 8333 HTTP server and fixes the
+                     Chromium `--app` immediate process-exit shutdown bug when
+                     Chromium is already open.
+
+  4-Agent Tandem Division in AGENT.MD:
+    • Agent 1: Rust Core, CLI path resolution (clap), pulldown-cmark AST/TOC, notify watcher
+    • Agent 2: Native Window (tao/wry), custom `typora://` embedded protocol, rfd dialogs
+    • Agent 3: Frontend Native IPC Bridge (`window.ipc`) for Read / Split / Edit modes
+    • Agent 4: Omarchy / Hyprland release build, ~/.local/bin install & .desktop entry
+
+--------------------------------------------------------------------------------
+7. TYPORA-RUSTREADER BUILD & DEPLOYMENT COMPLETION (2026-11-01)
+--------------------------------------------------------------------------------
+  Execution:         Autonomous execution via `/teamwork` multi-agent runner
+                     (Run ID: `1b0ba349-ff4f-4344-ba78-32ad2f631ff0`).
+  Audit Verdict:     VICTORY CONFIRMED by independent Sentinel post-victory auditor.
+  Compilation:       `cargo build --release` produced 6.3MB stripped standalone binary.
+  E2E Test Results:  410/410 tests passing across 11 suites (100% pass rate).
+  Unit/Integration:  711/711 tests passing (82 unit tests, 629 integration tests).
+  Installed Paths:   ~/.local/bin/typora-rust-reader (executable)
+                     ~/.local/bin/typora-reader -> typora-rust-reader (symlink)
+                     ~/.local/bin/typora-reader-legacy (backup of legacy script)
+                     ~/.local/share/applications/typora-rust-reader.desktop (XDG entry)
+  Launch Commands:   typora-reader [path/to/file.md]
+                     typora-rust-reader [path/to/file.md]
+                     typora-reader --mode split [file.md]
+                     typora-reader --theme night [file.md]
+  Apple M1 macOS:    Fully compatible via `tao` + `wry` WKWebView Cocoa target,
+                     native FSEvents file watcher, and NSOpenPanel dialogs.
+                     Compile on M1 via `cargo build --release` (or `cargo bundle`).
+                     Detailed guide: typora-like-.md-reader/portM1.md
+
+--------------------------------------------------------------------------------
+8. APPLE SILICON M1 PORTING SPECIFICATION (`portM1.md`) (2026-11-01)
+--------------------------------------------------------------------------------
+  Documentation:     /home/cjledbetter/Documents/Programming/typora-like-.md-reader/portM1.md
+  Native macOS API:  • Windowing: tao -> Cocoa NSWindow
+                     • Web Engine: wry -> Apple WKWebView (Hardware Accelerated)
+                     • Live Watcher: notify -> Apple FSEvents kernel events
+                     • Dialogs: rfd -> Native NSOpenPanel / NSSavePanel
+                     • In-Memory Protocol: rust-embed -> typora://localhost/...
+  Compilation:       `cargo build --release` (targets aarch64-apple-darwin)
+  PATH Install:      cp target/release/typora-rust-reader ~/.local/bin/
+                     ln -sf ~/.local/bin/typora-rust-reader ~/.local/bin/typora-reader
+  App Bundle:        `cargo bundle --release` -> /Applications/Typora Rust Reader.app
+                     (Right-click -> Get Info -> Open with -> Change All for .md)
+
+--------------------------------------------------------------------------------
+9. ACTIVE SESSION ID & RESUME COMMANDS
+--------------------------------------------------------------------------------
+  Current Active Session ID (Google Ultra):
+  0824aa42-5e30-4160-91cf-2b1b5f704743
+
+  Resume Session in Typora Folder (Auto-Approve):
+  cd /home/cjledbetter/Documents/Programming/typora-like-.md-reader
+  agy --dangerously-skip-permissions --conversation 0824aa42-5e30-4160-91cf-2b1b5f704743
+
+  Or Start Fresh in Typora Folder Using AGENT.MD:
+  cd /home/cjledbetter/Documents/Programming/typora-like-.md-reader
+  agy --dangerously-skip-permissions
+
+0824aa42-5e30-4160-91cf-2b1b5f704743
+0824aa42-5e30-4160-91cf-2b1b5f704743
+0824aa42-5e30-4160-91cf-2b1b5f704743
+================================================================================

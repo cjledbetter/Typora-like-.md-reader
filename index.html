@@ -249,6 +249,22 @@
       border: 1px solid var(--border-light);
     }
 
+    .dirty-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f59e0b;
+      margin-right: 6px;
+      vertical-align: middle;
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
+      animation: pulse-dirty-dot 2s infinite ease-in-out;
+    }
+    @keyframes pulse-dirty-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
     .view-mode-toggle {
       display: inline-flex;
       align-items: center;
@@ -668,36 +684,46 @@
       padding: 32px 36px 120px;
     }
 
-    /* Preview-Only View */
-    #main-container[data-view-mode="preview"] #editor-pane {
+    /* Preview-Only / Read View */
+    #main-container[data-view-mode="preview"] #editor-pane,
+    #main-container[data-view-mode="read"] #editor-pane {
       display: none !important;
     }
-    #main-container[data-view-mode="preview"] #split-resizer {
+    #main-container[data-view-mode="preview"] #split-resizer,
+    #main-container[data-view-mode="read"] #split-resizer {
       display: none !important;
     }
-    #main-container[data-view-mode="preview"] #preview-pane {
+    #main-container[data-view-mode="preview"] #preview-pane,
+    #main-container[data-view-mode="read"] #preview-pane {
       display: flex !important;
       width: 100% !important;
       flex: 1 1 100% !important;
       justify-content: center;
     }
-    html[data-width="narrow"] #main-container[data-view-mode="preview"] #content-wrapper { max-width: 680px; }
-    html[data-width="normal"] #main-container[data-view-mode="preview"] #content-wrapper { max-width: 860px; }
-    html[data-width="wide"] #main-container[data-view-mode="preview"] #content-wrapper   { max-width: 1120px; }
-    html[data-width="full"] #main-container[data-view-mode="preview"] #content-wrapper   { max-width: 100%; padding-left: 48px; padding-right: 48px; }
+    html[data-width="narrow"] #main-container[data-view-mode="preview"] #content-wrapper,
+    html[data-width="narrow"] #main-container[data-view-mode="read"] #content-wrapper { max-width: 680px; }
+    html[data-width="normal"] #main-container[data-view-mode="preview"] #content-wrapper,
+    html[data-width="normal"] #main-container[data-view-mode="read"] #content-wrapper { max-width: 860px; }
+    html[data-width="wide"] #main-container[data-view-mode="preview"] #content-wrapper,
+    html[data-width="wide"] #main-container[data-view-mode="read"] #content-wrapper   { max-width: 1120px; }
+    html[data-width="full"] #main-container[data-view-mode="preview"] #content-wrapper,
+    html[data-width="full"] #main-container[data-view-mode="read"] #content-wrapper   { max-width: 100%; padding-left: 48px; padding-right: 48px; }
 
-    /* Editor-Only View */
-    #main-container[data-view-mode="editor"] #editor-pane {
+    /* Editor-Only / Edit View */
+    #main-container[data-view-mode="editor"] #editor-pane,
+    #main-container[data-view-mode="edit"] #editor-pane {
       display: flex !important;
       width: 100% !important;
       max-width: 100% !important;
       flex: 1 1 100% !important;
       border-right: none;
     }
-    #main-container[data-view-mode="editor"] #split-resizer {
+    #main-container[data-view-mode="editor"] #split-resizer,
+    #main-container[data-view-mode="edit"] #split-resizer {
       display: none !important;
     }
-    #main-container[data-view-mode="editor"] #preview-pane {
+    #main-container[data-view-mode="editor"] #preview-pane,
+    #main-container[data-view-mode="edit"] #preview-pane {
       display: none !important;
     }
 
@@ -1141,17 +1167,17 @@
 
     <div class="nav-center">
       <div class="view-mode-toggle" id="view-mode-toggle" role="group" aria-label="View Mode">
-        <button class="mode-btn" data-mode="editor" title="Editor Only">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-          <span>Edit</span>
+        <button class="mode-btn" data-mode="preview" title="Read Mode (Ctrl+1)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>Read</span>
         </button>
-        <button class="mode-btn active" data-mode="split" title="Split Screen (Ctrl+\ / Cmd+\)">
+        <button class="mode-btn active" data-mode="split" title="Split Screen (Ctrl+2)">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
           <span>Split</span>
         </button>
-        <button class="mode-btn" data-mode="preview" title="Preview Only">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          <span>Preview</span>
+        <button class="mode-btn" data-mode="editor" title="Edit Mode (Ctrl+3)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span>Edit</span>
         </button>
       </div>
       <span class="doc-title-badge" id="doc-title">Typora Reader</span>
@@ -1361,6 +1387,151 @@
     let searchMatches = [];
     let currentMatchIndex = -1;
 
+    /* ==========================================================================
+       NATIVE BRIDGE (Dual-Transport Layer: Wry WebKit IPC vs Standalone Fallback)
+       ========================================================================== */
+    const NativeBridge = {
+      isNative() {
+        return typeof window.ipc !== 'undefined' && typeof window.ipc.postMessage === 'function';
+      },
+
+      post(cmd, payload = {}) {
+        if (!this.isNative()) {
+          console.warn(`[NativeBridge] Native command '${cmd}' ignored in standalone mode`);
+          return false;
+        }
+        try {
+          const message = JSON.stringify({ cmd, command: cmd, ...payload });
+          window.ipc.postMessage(message);
+          return true;
+        } catch (err) {
+          console.error(`[NativeBridge] Failed to postMessage '${cmd}':`, err);
+          return false;
+        }
+      },
+
+      ready() {
+        return this.post('ready');
+      },
+
+      saveFile(content) {
+        return this.post('save_file', { content });
+      },
+
+      saveFileAs(content) {
+        return this.post('save_file_as', { content });
+      },
+
+      openFileDialog() {
+        return this.post('open_file_dialog');
+      },
+
+      openDroppedPath(path) {
+        return this.post('open_dropped_path', { path });
+      },
+
+      setTitle(title) {
+        return this.post('set_title', { title });
+      },
+
+      printPdf() {
+        return this.post('print_pdf');
+      }
+    };
+
+    /* ==========================================================================
+       NATIVE CALLBACK REGISTRY (Invoked via webview.evaluate_script from Rust)
+       ========================================================================== */
+    window.__TYPORA_NATIVE__ = {
+      onFileLoaded(data) {
+        const payload = typeof data === 'string' ? JSON.parse(data) : (data || {});
+        const path = payload.path || payload.filename || '';
+        const filename = payload.filename || (path ? path.split('/').pop() : 'Untitled.md');
+        const content = payload.content !== undefined ? payload.content : '';
+
+        state.currentFile = path;
+        state.currentContent = content;
+        state.serverFileMtime = payload.mtime || Date.now();
+
+        if (markdownEditor) {
+          markdownEditor.value = content;
+          updateLineNumbers();
+          updateEditorStats();
+        }
+
+        renderMarkdown(content, filename, false);
+        setModified(false);
+
+        try {
+          localStorage.setItem('typora_last_content', content);
+          localStorage.setItem('typora_last_filename', filename);
+        } catch (e) {}
+
+        showToast(`Loaded: ${filename}`, 1500);
+      },
+
+      onFileSaved(data) {
+        const payload = typeof data === 'string' ? JSON.parse(data) : (data || {});
+        if (payload.path) state.currentFile = payload.path;
+        if (payload.mtime) state.serverFileMtime = payload.mtime;
+        state.isSaving = false;
+
+        setModified(false);
+
+        const name = payload.filename || (state.currentFile ? state.currentFile.split('/').pop() : 'document.md');
+        showToast(`Saved: ${name}`, 1800);
+      },
+
+      onExternalChange(data) {
+        const payload = typeof data === 'string' ? JSON.parse(data) : (data || {});
+        const newContent = payload.content !== undefined ? payload.content : '';
+        const newMtime = payload.mtime || Date.now();
+
+        if (state.isSaving) return;
+
+        if (state.isModified) {
+          showToast('External changes detected on disk (editor buffer preserved)', 3000);
+          return;
+        }
+
+        const prevPreviewScroll = previewPane ? previewPane.scrollTop : window.scrollY;
+        const prevEditorScroll = markdownEditor ? markdownEditor.scrollTop : 0;
+
+        state.currentContent = newContent;
+        state.serverFileMtime = newMtime;
+
+        if (markdownEditor) {
+          markdownEditor.value = newContent;
+          updateLineNumbers();
+          updateEditorStats();
+        }
+
+        const title = state.currentFile ? state.currentFile.split('/').pop() : null;
+        renderMarkdown(newContent, title, false);
+
+        if (previewPane) previewPane.scrollTop = prevPreviewScroll;
+        window.scrollTo({ top: prevPreviewScroll });
+        if (markdownEditor) markdownEditor.scrollTop = prevEditorScroll;
+
+        requestAnimationFrame(() => {
+          if (previewPane) previewPane.scrollTop = prevPreviewScroll;
+          window.scrollTo({ top: prevPreviewScroll });
+          if (markdownEditor) markdownEditor.scrollTop = prevEditorScroll;
+        });
+
+        showToast('File updated from disk', 1200);
+      },
+
+      onError(data) {
+        const payload = typeof data === 'string' ? JSON.parse(data) : (data || {});
+        state.isSaving = false;
+        const message = payload.message || payload.error || payload.code || 'An error occurred';
+        showToast(`Error: ${message}`, 3500);
+      }
+    };
+
+    window.__TYPORA_NATIVE__.onExternalFileChange = window.__TYPORA_NATIVE__.onExternalChange;
+
     // Toast helper
     function showToast(message, duration = 2500) {
       toastEl.textContent = message;
@@ -1380,15 +1551,39 @@
     /* ==========================================================================
        EDITOR & SPLIT SCREEN MANAGEMENT
        ========================================================================== */
+    function updateDocumentTitle() {
+      const filename = state.currentFile ? state.currentFile.split('/').pop() : 'Untitled.md';
+      const cleanName = filename || 'Untitled.md';
+      const prefix = state.isModified ? '*' : '';
+      const fullTitle = `${prefix}${cleanName} — Typora-RustReader`;
+
+      document.title = fullTitle;
+
+      if (NativeBridge.isNative()) {
+        NativeBridge.setTitle(fullTitle);
+      }
+
+      if (docTitleEl) {
+        if (state.isModified) {
+          docTitleEl.innerHTML = `<span class="dirty-dot" title="Unsaved changes"></span>${escapeHtml(cleanName)}`;
+        } else {
+          docTitleEl.textContent = cleanName;
+        }
+      }
+    }
+
     function setModified(isMod) {
       state.isModified = isMod;
-      if (isMod) {
-        editorStatusBadge.textContent = '● Modified';
-        editorStatusBadge.classList.add('modified');
-      } else {
-        editorStatusBadge.textContent = 'Saved';
-        editorStatusBadge.classList.remove('modified');
+      if (editorStatusBadge) {
+        if (isMod) {
+          editorStatusBadge.textContent = '● Modified';
+          editorStatusBadge.classList.add('modified');
+        } else {
+          editorStatusBadge.textContent = 'Saved';
+          editorStatusBadge.classList.remove('modified');
+        }
       }
+      updateDocumentTitle();
     }
 
     function updateLineNumbers() {
@@ -1423,15 +1618,23 @@
       try { localStorage.setItem('typora_split_ratio', clamped); } catch(e){}
     }
 
-    function setViewMode(mode) {
-      state.viewMode = mode;
-      mainContainer.setAttribute('data-view-mode', mode);
-      viewModeBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-      });
-      try { localStorage.setItem('typora_view_mode', mode); } catch(e){}
+    function normalizeMode(mode) {
+      if (mode === 'preview' || mode === 'read') return 'preview';
+      if (mode === 'editor' || mode === 'edit') return 'editor';
+      return 'split';
+    }
 
-      if (mode === 'split' || mode === 'editor') {
+    function setViewMode(mode) {
+      const normalized = normalizeMode(mode);
+      state.viewMode = normalized;
+      mainContainer.setAttribute('data-view-mode', normalized);
+      viewModeBtns.forEach(btn => {
+        const btnMode = normalizeMode(btn.dataset.mode);
+        btn.classList.toggle('active', btnMode === normalized);
+      });
+      try { localStorage.setItem('typora_view_mode', normalized); } catch(e){}
+
+      if (normalized === 'split' || normalized === 'editor') {
         if (markdownEditor.value !== state.currentContent) {
           markdownEditor.value = state.currentContent;
         }
@@ -1450,14 +1653,23 @@
        FILE SAVE / EXPORT
        ========================================================================== */
     async function saveContent() {
-      const content = markdownEditor.value;
+      const content = markdownEditor ? markdownEditor.value : state.currentContent;
       const filename = state.currentFile ? state.currentFile.split('/').pop() : (state.fileHandle ? state.fileHandle.name : 'document.md');
       state.isSaving = true;
 
-      // Update badge to saving status
       if (editorStatusBadge) editorStatusBadge.textContent = 'Saving...';
 
-      // 1. Direct in-place file system writing via File System Access API (Chromium / Brave / Edge)
+      // 1. Native Wry IPC Transport (First Priority)
+      if (NativeBridge.isNative()) {
+        if (!state.currentFile || state.currentFile === 'Untitled.md') {
+          NativeBridge.saveFileAs(content);
+        } else {
+          NativeBridge.saveFile(content);
+        }
+        return;
+      }
+
+      // 2. Direct in-place file system writing via File System Access API (Chromium / Brave / Edge)
       if (state.fileHandle && state.fileHandle.createWritable) {
         try {
           const writable = await state.fileHandle.createWritable();
@@ -1992,7 +2204,13 @@
        FILE OPENING & DRAG-AND-DROP
        ========================================================================== */
     btnOpenFile.addEventListener('click', async () => {
-      // Prefer modern File System Access API in Chromium/Brave for direct save capability
+      // 1. Native Wry IPC: triggers native rfd::FileDialog in Rust
+      if (NativeBridge.isNative()) {
+        NativeBridge.openFileDialog();
+        return;
+      }
+
+      // 2. Prefer modern File System Access API in Chromium/Brave for direct save capability
       if (window.showOpenFilePicker) {
         try {
           const [handle] = await window.showOpenFilePicker({
@@ -2068,17 +2286,35 @@
       dropOverlay.classList.remove('active');
       const files = e.dataTransfer.files;
       if (files && files.length > 0) {
-        loadFile(files[0]);
+        const file = files[0];
+        if (NativeBridge.isNative() && file.path) {
+          NativeBridge.openDroppedPath(file.path);
+          return;
+        }
+        loadFile(file);
       }
     });
 
     // Print Button
-    btnPrint.addEventListener('click', () => window.print());
+    btnPrint.addEventListener('click', () => {
+      if (NativeBridge.isNative()) {
+        NativeBridge.printPdf();
+      } else {
+        window.print();
+      }
+    });
 
     /* ==========================================================================
        BACKEND PYTHON SERVER INTEGRATION (Live Reload)
        ========================================================================== */
     async function checkServerMode() {
+      // If running inside native Wry/Rust environment, do NOT poll or fetch Python server
+      if (NativeBridge.isNative()) {
+        state.serverMode = false;
+        NativeBridge.ready();
+        return;
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const filePath = urlParams.get('file');
 
@@ -2379,28 +2615,75 @@
     window.addEventListener('keydown', (e) => {
       const isCmdOrCtrl = e.metaKey || e.ctrlKey;
 
-      if (isCmdOrCtrl && e.key.toLowerCase() === 's') {
+      if (!isCmdOrCtrl) {
+        if (e.key === 'Escape') {
+          if (searchBar.classList.contains('show')) {
+            closeSearch();
+          }
+        }
+        return;
+      }
+
+      const key = e.key.toLowerCase();
+
+      // Ctrl+S: Save file
+      if (key === 's') {
         e.preventDefault();
         saveContent();
-      } else if (isCmdOrCtrl && (e.key === '\\' || e.key.toLowerCase() === 'e')) {
+      }
+      // Ctrl+O: Open file
+      else if (key === 'o' && !e.shiftKey) {
+        e.preventDefault();
+        if (NativeBridge.isNative()) {
+          NativeBridge.openFileDialog();
+        } else {
+          fileInput.value = '';
+          fileInput.click();
+        }
+      }
+      // Ctrl+P: Print / PDF
+      else if (key === 'p') {
+        e.preventDefault();
+        if (NativeBridge.isNative()) {
+          NativeBridge.printPdf();
+        } else {
+          window.print();
+        }
+      }
+      // Ctrl+1: Read Mode (Preview)
+      else if (e.key === '1') {
+        e.preventDefault();
+        setViewMode('preview');
+        showToast('Read Mode (Ctrl+1)');
+      }
+      // Ctrl+2: Split Mode
+      else if (e.key === '2') {
+        e.preventDefault();
+        setViewMode('split');
+        showToast('Split Mode (Ctrl+2)');
+      }
+      // Ctrl+3: Edit Mode
+      else if (e.key === '3') {
+        e.preventDefault();
+        setViewMode('editor');
+        showToast('Edit Mode (Ctrl+3)');
+      }
+      // Ctrl+\ or Ctrl+E: Toggle Split / Preview
+      else if (key === '\\' || key === 'e') {
         e.preventDefault();
         const nextMode = state.viewMode === 'split' ? 'preview' : 'split';
         setViewMode(nextMode);
-        showToast(nextMode === 'split' ? 'Split View' : 'Preview View');
-      } else if (isCmdOrCtrl && e.key.toLowerCase() === 'o' && !e.shiftKey) {
-        e.preventDefault();
-        fileInput.value = '';
-        fileInput.click();
-      } else if ((isCmdOrCtrl && e.shiftKey && e.key.toLowerCase() === 'o') || (isCmdOrCtrl && e.key.toLowerCase() === 'b')) {
+        showToast(nextMode === 'split' ? 'Split View' : 'Read View');
+      }
+      // Ctrl+Shift+O or Ctrl+B: Toggle outline
+      else if ((e.shiftKey && key === 'o') || key === 'b') {
         e.preventDefault();
         toggleSidebar();
-      } else if (isCmdOrCtrl && e.key.toLowerCase() === 'f') {
+      }
+      // Ctrl+F: In-document search
+      else if (key === 'f') {
         e.preventDefault();
         openSearch();
-      } else if (e.key === 'Escape') {
-        if (searchBar.classList.contains('show')) {
-          closeSearch();
-        }
       }
     });
 
@@ -2454,8 +2737,8 @@ Press <kbd>Ctrl</kbd> + <kbd>O</kbd> to open any Markdown file!
 
       const urlParams = new URLSearchParams(window.location.search);
       const modeParam = urlParams.get('mode');
-      if (modeParam && ['split', 'editor', 'preview'].includes(modeParam)) {
-        savedMode = modeParam;
+      if (modeParam && ['split', 'editor', 'preview', 'read', 'edit'].includes(modeParam)) {
+        savedMode = normalizeMode(modeParam);
       }
 
       setTheme(savedTheme);

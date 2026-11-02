@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Typora Rust Reader
+GenericName=Markdown Reader
+Comment=Minimalist distraction-free Markdown reader inspired by Typora
+Exec=typora-rust-reader %f
+Icon=text-markdown
+Terminal=false
+Categories=Office;WordProcessor;Utility;TextEditor;Viewer;
+MimeType=text/markdown;text/x-markdown;text/plain;
+Keywords=markdown;typora;reader;viewer;editor;notes;
+StartupNotify=true
+StartupWMClass=com.typora.rust-reader
