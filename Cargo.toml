@@ -40,3 +40,12 @@ lto = "thin"
 strip = true
 codegen-units = 1
 panic = "abort"
+
+[package.metadata.bundle]
+name = "Typora Rust Reader"
+identifier = "com.typora.rust-reader"
+version = "0.1.0"
+copyright = "Copyright (c) 2026 Typora-RustReader Team"
+category = "Productivity"
+short_description = "Minimalist distraction-free Markdown reader and editor"
+
