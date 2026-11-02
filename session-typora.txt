@@ -162,20 +162,41 @@ What this sets up on Omarchy:
                      (Right-click -> Get Info -> Open with -> Change All for .md)
 
 --------------------------------------------------------------------------------
-9. ACTIVE SESSION ID & RESUME COMMANDS
+9. ACTIVE SESSION ID & RESUME COMMANDS (HISTORICAL)
 --------------------------------------------------------------------------------
-  Current Active Session ID (Google Ultra):
+  Session ID (2026-11-01):
   0824aa42-5e30-4160-91cf-2b1b5f704743
 
-  Resume Session in Typora Folder (Auto-Approve):
+  Resume Session:
   cd /home/cjledbetter/Documents/Programming/typora-like-.md-reader
   agy --dangerously-skip-permissions --conversation 0824aa42-5e30-4160-91cf-2b1b5f704743
 
-  Or Start Fresh in Typora Folder Using AGENT.MD:
-  cd /home/cjledbetter/Documents/Programming/typora-like-.md-reader
-  agy --dangerously-skip-permissions
+--------------------------------------------------------------------------------
+10. GITHUB V2 MIGRATION, MACOS M1 AUTOMATION & GITHUB PAGES (2026-11-02)
+--------------------------------------------------------------------------------
+  Active Session ID: 3adf813f-9093-4407-9d54-43dd39b465d3
 
-0824aa42-5e30-4160-91cf-2b1b5f704743
-0824aa42-5e30-4160-91cf-2b1b5f704743
-0824aa42-5e30-4160-91cf-2b1b5f704743
+  Resume Current Session in Terminal:
+  cd /home/cjledbetter/Documents/Programming/typora-like-.md-reader
+  agy --dangerously-skip-permissions --conversation 3adf813f-9093-4407-9d54-43dd39b465d3
+
+  Accomplishments in this Session:
+  • Cleaned bloated git commit (excluded 12,000+ build artifacts in target/).
+  • Created dedicated v2 repository: https://github.com/cjledbetter/typora-rust-reader
+  • Preserved v1 repository intact: https://github.com/cjledbetter/Typora-like-.md-reader
+  • Created automated 1-click macOS installer: `install-mac.sh` & `MAC_SETUP.txt`
+      - Auto-compiles native ARM64 release binary
+      - Generates `/Applications/Typora Rust Reader.app`
+      - Registers Info.plist with macOS Markdown UTIs (net.daringfireball.markdown)
+      - Symlinks ~/.local/bin/typora-reader and typora-rust-reader
+  • Updated GitHub Pages deployments:
+      - V1 URL: https://cjledbetter.github.io/Typora-like-.md-reader/
+      - V2 URL: https://cjledbetter.github.io/typora-rust-reader/
+  • Created standalone DMG/ZIP distribution instructions for family sharing:
+      - hdiutil create -volname "Typora Rust Reader" -srcfolder "/Applications/Typora Rust Reader.app" -ov -format UDZO ~/Desktop/Typora-Rust-Reader-M1.dmg
+
+3adf813f-9093-4407-9d54-43dd39b465d3
+3adf813f-9093-4407-9d54-43dd39b465d3
+3adf813f-9093-4407-9d54-43dd39b465d3
 ================================================================================
+
