@@ -1,0 +1,37 @@
+================================================================================
+TYPORA RUST READER - MAC M1 INSTALLATION & DEFAULT APP GUIDE
+================================================================================
+
+1. INSTALL APPLICATION & TERMINAL SHORTCUTS AUTOMATICALLY
+---------------------------------------------------------
+Inside the typora-rust-reader folder on your M1 Mac, simply run:
+
+    bash install-mac.sh
+
+This script automatically:
+  • Compiles the release binary (if not already compiled).
+  • Creates "Typora Rust Reader.app" in /Applications (or ~/Applications).
+  • Configures Info.plist with Markdown document associations (.md, .markdown).
+  • Sets permissions and registers with macOS LaunchServices.
+  • Installs terminal commands to ~/.local/bin/typora-rust-reader and ~/.local/bin/typora-reader.
+  • Refreshes Finder.
+
+
+2. HOW TO SET TYPORA AS DEFAULT READER FOR ALL .MD FILES
+---------------------------------------------------------
+After running the script:
+  1. In Finder, click any .md file.
+  2. Press Cmd + I (or right-click -> "Get Info").
+  3. Under the "Open with:" dropdown, select "Typora Rust Reader".
+  4. Click the "Change All..." button right below the dropdown.
+  5. Confirm when macOS asks "Are you sure you want to change all similar documents?".
+
+Now double-clicking any .md file anywhere on your Mac will launch Typora Rust Reader.
+
+
+3. TEST FROM MAC TERMINAL
+-------------------------
+Open any markdown document from terminal:
+    typora-reader sample.md
+    typora-rust-reader sample.md
+    open -a "Typora Rust Reader" sample.md
