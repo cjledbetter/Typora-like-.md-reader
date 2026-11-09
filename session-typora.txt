@@ -195,6 +195,34 @@ What this sets up on Omarchy:
   • Created standalone DMG/ZIP distribution instructions for family sharing:
       - hdiutil create -volname "Typora Rust Reader" -srcfolder "/Applications/Typora Rust Reader.app" -ov -format UDZO ~/Desktop/Typora-Rust-Reader-M1.dmg
 
+--------------------------------------------------------------------------------
+11. WATCHER RELOAD LOOP & TWO-FINGER SCROLL JITTER FIXES (2026-11-09)
+--------------------------------------------------------------------------------
+  Active Session ID: 3adf813f-9093-4407-9d54-43dd39b465d3
+
+  Resume Current Session in Terminal:
+  cd /home/cjledbetter/Documents/Programming/typora-like-.md-reader
+  agy --dangerously-skip-permissions --conversation 3adf813f-9093-4407-9d54-43dd39b465d3
+
+  Fixes Applied & Deployed:
+  • Fixed flickering "File updated from disk" notification loop:
+      - Filtered out non-mutating `EventKind::Access` (IN_OPEN, IN_ACCESS,
+        IN_CLOSE_NOWRITE) events in `src/watcher.rs` so reading a file never
+        triggers a recursive `WatcherEvent::Modified` loop.
+      - Added content deduplication in `src/main.rs` (`state.last_content`) and
+        `ui/index.html` (`onExternalChange`) so unchanged disk content never
+        re-renders the DOM or shows a toast.
+      - Added `toastTimeout` cleanup in `showToast()` to prevent overlapping timers.
+  • Fixed jittery two-finger trackpad scrolling:
+      - Removed `scroll-behavior: smooth` on `#preview-pane` which caused a 300ms
+        lag animation on every programmatic sync-scroll update and fought native
+        trackpad momentum.
+      - Replaced boolean `isSyncingScroll` lock with directional `activeScrollPane`
+        (`'editor'` vs `'preview'`) and `{ passive: true }` listeners so high-rate
+        trackpad scroll frames are never dropped and panes never ping-pong.
+  • Rebuilt and installed on Linux (`~/.local/bin/typora-rust-reader`) and pushed
+    to both GitHub repositories (`origin` and `v1-origin`).
+
 3adf813f-9093-4407-9d54-43dd39b465d3
 3adf813f-9093-4407-9d54-43dd39b465d3
 3adf813f-9093-4407-9d54-43dd39b465d3
