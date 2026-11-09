@@ -587,6 +587,8 @@
       padding: 14px 16px;
       overflow-y: auto;
       overflow-x: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
       white-space: pre-wrap;
       word-break: break-word;
     }
@@ -652,11 +654,12 @@
       flex: 1;
       height: 100%;
       overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
       min-width: 200px;
       background: var(--bg-color);
       display: flex;
       justify-content: center;
-      scroll-behavior: smooth;
     }
 
     #content-wrapper {
@@ -1489,6 +1492,12 @@
 
         if (state.isSaving) return;
 
+        // Ignore spurious notifications when disk content has not changed
+        if (newContent === state.currentContent) {
+          state.serverFileMtime = newMtime;
+          return;
+        }
+
         if (state.isModified) {
           showToast('External changes detected on disk (editor buffer preserved)', 3000);
           return;
@@ -1533,10 +1542,15 @@
     window.__TYPORA_NATIVE__.onExternalFileChange = window.__TYPORA_NATIVE__.onExternalChange;
 
     // Toast helper
+    let toastTimeout = null;
     function showToast(message, duration = 2500) {
+      if (toastTimeout) clearTimeout(toastTimeout);
       toastEl.textContent = message;
       toastEl.classList.add('show');
-      setTimeout(() => toastEl.classList.remove('show'), duration);
+      toastTimeout = setTimeout(() => {
+        toastEl.classList.remove('show');
+        toastTimeout = null;
+      }, duration);
     }
 
     function escapeHtml(str) {
@@ -2070,7 +2084,9 @@
       items.forEach((item, idx) => {
         if (idx === index) {
           item.classList.add('active');
-          item.scrollIntoView({ block: 'nearest' });
+          if (sidebarEl.classList.contains('open')) {
+            item.scrollIntoView({ block: 'nearest' });
+          }
         } else {
           item.classList.remove('active');
         }
@@ -2496,15 +2512,16 @@
       }
     });
 
-    // Synchronized Scrolling
-    let isSyncingScroll = false;
+    // Synchronized Scrolling (directional lock prevents trackpad momentum jitter)
+    let activeScrollPane = null;
     let syncScrollTimeout = null;
 
     markdownEditor.addEventListener('scroll', () => {
       lineNumbersEl.scrollTop = markdownEditor.scrollTop;
 
-      if (!syncScrollCheck.checked || isSyncingScroll || state.viewMode !== 'split') return;
-      isSyncingScroll = true;
+      if (!syncScrollCheck.checked || state.viewMode !== 'split') return;
+      if (activeScrollPane === 'preview') return;
+      activeScrollPane = 'editor';
 
       const editorScrollable = markdownEditor.scrollHeight - markdownEditor.clientHeight;
       if (editorScrollable > 0) {
@@ -2514,12 +2531,13 @@
       }
 
       if (syncScrollTimeout) clearTimeout(syncScrollTimeout);
-      syncScrollTimeout = setTimeout(() => { isSyncingScroll = false; }, 30);
-    });
+      syncScrollTimeout = setTimeout(() => { activeScrollPane = null; }, 120);
+    }, { passive: true });
 
     previewPane.addEventListener('scroll', () => {
-      if (!syncScrollCheck.checked || isSyncingScroll || state.viewMode !== 'split') return;
-      isSyncingScroll = true;
+      if (!syncScrollCheck.checked || state.viewMode !== 'split') return;
+      if (activeScrollPane === 'editor') return;
+      activeScrollPane = 'preview';
 
       const previewScrollable = previewPane.scrollHeight - previewPane.clientHeight;
       if (previewScrollable > 0) {
@@ -2530,8 +2548,8 @@
       }
 
       if (syncScrollTimeout) clearTimeout(syncScrollTimeout);
-      syncScrollTimeout = setTimeout(() => { isSyncingScroll = false; }, 30);
-    });
+      syncScrollTimeout = setTimeout(() => { activeScrollPane = null; }, 120);
+    }, { passive: true });
 
     // Editor Action Buttons
     btnSaveContent.addEventListener('click', saveContent);

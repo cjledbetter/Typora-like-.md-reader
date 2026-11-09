@@ -3,6 +3,7 @@
 //! Provides real-time notifications for file modifications and deletions without losing
 //! watches during atomic file replacement (which replace the target inode).
 
+use notify::event::{AccessKind, AccessMode};
 use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -105,6 +106,20 @@ impl DocumentWatcher {
 
                 match res {
                     Ok(Ok(event)) => {
+                        // Ignore non-mutating access events (e.g., IN_OPEN, IN_ACCESS, IN_CLOSE_NOWRITE
+                        // emitted when reading the file), preventing read -> notify -> read loops.
+                        let is_mutating_event = matches!(
+                            event.kind,
+                            EventKind::Create(_)
+                                | EventKind::Modify(_)
+                                | EventKind::Remove(_)
+                                | EventKind::Access(AccessKind::Close(AccessMode::Write))
+                                | EventKind::Any
+                        );
+                        if !is_mutating_event {
+                            continue;
+                        }
+
                         let target_opt = {
                             let guard = active_clone.lock().unwrap();
                             guard.clone()
@@ -360,5 +375,36 @@ mod tests {
         thread::sleep(Duration::from_millis(300));
         let total = count.load(Ordering::SeqCst);
         assert!(total <= 2, "Debouncer must collapse rapid writes, got: {}", total);
+    }
+
+    #[test]
+    fn test_unit_reading_watched_file_does_not_trigger_modified() {
+        let sandbox = TestSandbox::new();
+        let file = sandbox.create_file("unit_read_only.md", "# Read Only Test");
+
+        let (tx, rx) = channel();
+        let mut watcher = DocumentWatcher::new(move |ev| {
+            let _ = tx.send(ev);
+        }).expect("DocumentWatcher::new failed");
+
+        watcher.watch_file(&file).expect("watch_file failed");
+        thread::sleep(Duration::from_millis(100));
+
+        // Drain any initial creation events
+        while rx.try_recv().is_ok() {}
+
+        // Read the file multiple times (simulating app loading / reading the file)
+        for _ in 0..5 {
+            let content = fs::read_to_string(&file).expect("Failed to read file");
+            assert_eq!(content, "# Read Only Test");
+            thread::sleep(Duration::from_millis(20));
+        }
+
+        let res = rx.recv_timeout(Duration::from_millis(250));
+        assert!(
+            res.is_err(),
+            "Reading a watched file must not trigger a spurious Modified event, got: {:?}",
+            res
+        );
     }
 }

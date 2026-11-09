@@ -15,6 +15,7 @@ use typora_rust_reader::window::{self, UserEvent};
 /// Runtime mutable state for the application event loop.
 struct AppState {
     active_path: Option<PathBuf>,
+    last_content: Option<String>,
     is_dirty: bool,
     mode: String,
     theme: String,
@@ -77,6 +78,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 7. Initialize Application State
     let mut state = AppState {
         active_path: initial_file,
+        last_content: None,
         is_dirty: false,
         mode: initial_mode,
         theme: initial_theme,
@@ -113,6 +115,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             let (toc, stats) = markdown::extract_toc_and_stats(&doc.content);
                             let _ = watcher.watch_file(&path);
                             state.active_path = Some(path.clone());
+                            state.last_content = Some(doc.content.clone());
                             state.is_dirty = false;
 
                             window.set_title(&ipc::format_window_title(&doc.filename, false));
@@ -155,6 +158,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     if matches_active {
                         if let Ok(doc) = io::read_file_lossy(&path) {
+                            // Suppress spurious reload if disk content is identical to last known content
+                            if state.last_content.as_deref() == Some(doc.content.as_str()) {
+                                return;
+                            }
+                            state.last_content = Some(doc.content.clone());
+
                             let (toc, stats) = markdown::extract_toc_and_stats(&doc.content);
                             state.is_dirty = false;
                             window.set_title(&ipc::format_window_title(&doc.filename, false));
@@ -207,6 +216,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             watcher.mark_self_saved(mtime);
 
                             state.active_path = Some(path.clone());
+                            state.last_content = Some(content);
                             state.is_dirty = false;
                             window.set_title(&ipc::format_window_title(&filename, false));
 
@@ -239,6 +249,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             // DOM ready handshake
                             if let Some(ref path) = state.active_path {
                                 if let Ok(doc) = io::read_file_lossy(path) {
+                                    state.last_content = Some(doc.content.clone());
                                     let (toc, stats) = markdown::extract_toc_and_stats(&doc.content);
                                     window.set_title(&ipc::format_window_title(&doc.filename, false));
 
@@ -292,6 +303,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                             .to_string();
 
                                         watcher.mark_self_saved(mtime);
+                                        state.last_content = Some(content);
                                         state.is_dirty = false;
                                         window.set_title(&ipc::format_window_title(&filename, false));
 
